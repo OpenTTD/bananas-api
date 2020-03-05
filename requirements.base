@@ -1,0 +1,11 @@
+aiohttp
+aioauth_client
+boto3
+click
+gitpython
+marshmallow
+marshmallow-enum
+Pillow
+python-dateutil
+PyYAML
+sentry_sdk
