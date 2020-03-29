@@ -1,0 +1,4 @@
+This license is meant as part of the regression set, and is in fact not really a license.
+It is just here to validate what happens if we attach a custom license to an upload.
+
+Here, have a ship (🚢) as nice addition to this license file.

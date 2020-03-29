@@ -1,0 +1,6 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- api: new-package/publish
+  error: "Expecting at least a single file defining the Content Type."

@@ -1,0 +1,9 @@
+steps:
+- api: user/login
+- api: new-package/start
+- api: new-package/update
+  version: "1234567890123456"
+  error:
+    version: "Longer than maximum length 15."
+- api: new-package/update
+  version: "123456789012345"

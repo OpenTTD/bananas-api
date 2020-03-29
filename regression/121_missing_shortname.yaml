@@ -1,0 +1,17 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: small-missing-shortname.obg
+- file-upload: valid.grf
+- file-upload: valid.grf
+  name: valid1.grf
+- file-upload: valid.grf
+  name: valid2.grf
+- file-upload: valid.grf
+  name: valid3.grf
+- file-upload: valid.grf
+  name: valid4.grf
+- file-upload: valid.grf
+  name: valid5.grf
+- api: new-package/publish
+  error: "small-missing-shortname.obg: Option metadata:shortname is missing."

@@ -1,0 +1,16 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: small.obg
+- file-upload: valid.grf
+- file-upload: valid.grf
+  name: valid1.grf
+- file-upload: valid.grf
+  name: valid2.grf
+- file-upload: valid3.grf
+- file-upload: valid.grf
+  name: valid4.grf
+- file-upload: valid.grf
+  name: valid5.grf
+- api: new-package/publish
+  error: "valid2.grf: The md5sum doesn't match the one mentioned in small.obg."

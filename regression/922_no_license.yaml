@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- api: new-package/update
+  name: "test"
+  version: "test"
+- api: new-package/publish
+  error: "License is not yet set for this package."

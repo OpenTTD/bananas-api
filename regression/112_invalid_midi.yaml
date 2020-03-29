@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: noteon-noteoff.obm
+- file-upload: nosound.cat
+  name: noteon-noteoff.mid
+- api: new-package/publish
+  error: "noteon-noteoff.mid: Invalid MIDI header."

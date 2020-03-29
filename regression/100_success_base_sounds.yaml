@@ -1,0 +1,22 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: nosound.obs
+- file-upload: nosound.cat
+- file-upload: license.txt
+- file-upload: readme.txt
+  name: readme_nl.txt
+- file-upload: changelog.txt
+  name: changelog_nl.txt
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "Custom"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "Custom"
+  md5sum-partial: "b16a57bf"
+  content-type: "base-sounds"
+  unique-id: "4e554c4c"
+- api: new-package/publish

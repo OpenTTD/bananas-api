@@ -1,0 +1,15 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: heightmap.png
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "409b021d"
+  content-type: "heightmap"
+- api: new-package/publish

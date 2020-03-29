@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: nosound.obs
+- file-upload: noteon-noteoff.mid
+  name: nosound.cat
+- api: new-package/publish
+  error: "nosound.cat: Invalid cat header."

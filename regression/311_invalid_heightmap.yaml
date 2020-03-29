@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: scenario.scn
+  name: heightmap.png
+- api: new-package/publish
+  error: "heightmap.png: File is not a valid image."

@@ -1,0 +1,38 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- file-upload: readme.txt
+- file-upload: changelog.txt
+- api: new-package/update
+  name: "test--test"
+  version: "v1"
+  license: "GPL v2"
+  description: "My Description"
+  url: "https://www.openttd.org/"
+  tags:
+  - "tag1"
+  - "tag2"
+  compatibility:
+  - name: master
+    conditions:
+    - ">= 1.0.0"
+    - "< 1.10.0"
+- api: new-package/info
+  name: "test--test"
+  version: "v1"
+  license: "GPL v2"
+  description: "My Description"
+  url: "https://www.openttd.org/"
+  tags:
+  - "tag1"
+  - "tag2"
+  compatibility:
+  - name: master
+    conditions:
+    - ">= 1.0.0"
+    - "< 1.10.0"
+  md5sum-partial: "c81c3d77"
+  content-type: "newgrf"
+  unique-id: "4e4d4c01"
+- api: new-package/publish

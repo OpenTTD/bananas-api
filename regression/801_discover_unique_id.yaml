@@ -1,0 +1,16 @@
+steps:
+- api: discover/unique-id
+  content-type: "newgrf"
+  unique-id: "4e4d4c01"
+  packages:
+  - name: "test--test"
+    version: "v2"
+    license: "GPL v2"
+    description: "My Description"
+    url: "https://www.openttd.org/"
+    tags:
+    - "tag1"
+    - "tag2"
+    md5sum-partial: "fc03854a"
+    content-type: "newgrf"
+    unique-id: "4e4d4c01"

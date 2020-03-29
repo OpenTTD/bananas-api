@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: heightmap.png
+  name: scenario.scn
+- api: new-package/publish
+  error: "scenario.scn: Unknown savegame compression b'\\x89PNG'."

@@ -1,0 +1,9 @@
+steps:
+- api: user/login
+- api: new-package/start
+- api: new-package/update
+  name: "test"
+  version: "test"
+  license: "My License"
+  error:
+    license: "Invalid enum value My License"

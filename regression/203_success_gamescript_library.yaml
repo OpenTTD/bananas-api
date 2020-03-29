@@ -1,0 +1,22 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: library-gs.nut
+  name: library.nut
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  description: |-
+    Test
+    Newline
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "49655a23"
+  content-type: "game-script-library"
+  unique-id: "52454752"
+  description: "Test\nNewline"
+- api: new-package/publish
