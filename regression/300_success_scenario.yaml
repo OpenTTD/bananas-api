@@ -1,0 +1,23 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: scenario.scn
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  dependencies:
+  - content-type: newgrf
+    unique-id: 4e4d4c01
+    md5sum-partial: c81c3d77
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "29d58129"
+  content-type: "scenario"
+  dependencies:
+  - content-type: newgrf
+    unique-id: 4e4d4c01
+    md5sum-partial: c81c3d77
+- api: new-package/publish

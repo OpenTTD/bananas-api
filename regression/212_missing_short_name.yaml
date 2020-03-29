@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: info-no-short-name.nut
+  name: info.nut
+- api: new-package/publish
+  error: "info.nut: Couldn't parse file to find GetShortName() function."

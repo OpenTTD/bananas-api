@@ -1,0 +1,14 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: scenario.scn
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  dependencies:
+  - content-type: newgrf
+    unique-id: ffffffff
+    md5sum-partial: ffffffff
+  error:
+    dependencies: "Package with unique-id 'ffffffff' does not exist for newgrf."

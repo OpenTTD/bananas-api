@@ -1,0 +1,25 @@
+[metadata]
+name        = Small
+version     = 1
+palette     = Windows
+blitter     = 32bpp
+description = Small Base Graphics
+
+[files]
+base     = valid.grf
+arctic   = valid1.grf
+tropical = valid2.grf
+logos    = valid3.grf
+toyland  = valid4.grf
+extra    = valid5.grf
+
+[md5s]
+valid.grf     = c81c3d77aaec48d1a264c6fd170c2657
+valid1.grf    = c81c3d77aaec48d1a264c6fd170c2657
+valid2.grf    = c81c3d77aaec48d1a264c6fd170c2657
+valid3.grf    = c81c3d77aaec48d1a264c6fd170c2657
+valid4.grf    = c81c3d77aaec48d1a264c6fd170c2657
+valid5.grf    = c81c3d77aaec48d1a264c6fd170c2657
+
+[origin]
+default = Please redownload from official source.

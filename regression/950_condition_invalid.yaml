@@ -1,0 +1,11 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/update
+  compatibility:
+  - name: master
+    conditions:
+    - "! 1.9.0"
+  error:
+    compatibility.conditions: "Condition can only mark the first client-version this version does or doesn't work for; expected '>= VERSION' or '< VERSION', got '! 1.9.0'."

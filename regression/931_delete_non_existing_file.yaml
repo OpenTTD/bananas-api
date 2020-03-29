@@ -1,0 +1,6 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/delete-file
+  uuid: 1234

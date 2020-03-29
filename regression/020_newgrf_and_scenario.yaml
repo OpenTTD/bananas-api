@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- file-upload: valid2.grf
+- api: new-package/publish
+  error: "More than one newgrf files was detected, where only one was expected."

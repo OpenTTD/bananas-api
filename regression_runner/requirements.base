@@ -1,0 +1,6 @@
+aiohttp
+click
+coloredlogs
+PyYAML
+tuspy
+verboselogs

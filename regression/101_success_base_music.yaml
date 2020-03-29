@@ -1,0 +1,21 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: noteon-noteoff.obm
+- file-upload: noteon-noteoff.mid
+- file-upload: readme.txt
+  name: readme_nl_NL.txt
+- file-upload: changelog.txt
+  name: changelog_nl_NL.txt
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "c2c91e76"
+  content-type: "base-music"
+  unique-id: "4e4f4e4f"
+- api: new-package/publish

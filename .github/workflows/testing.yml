@@ -22,10 +22,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Flake8
+    - name: Flake8 bananas_api
       uses: TrueBrain/actions-flake8@master
       with:
         path: bananas_api
+    - name: Flake8 regression_runner
+      uses: TrueBrain/actions-flake8@master
+      with:
+        path: regression_runner
 
   black:
     name: Black
@@ -37,8 +41,36 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-    - name: Black
+    - name: Set up packages
       run: |
         python -m pip install --upgrade pip
         pip install black
-        black -l 120 --check bananas_api
+    - name: Black
+      run: |
+        black -l 120 --check bananas_api regression_runner
+
+  regression:
+    name: Regression
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Set up packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r regression_runner/requirements.txt
+    - name: Install tusd
+      run: |
+        wget -q https://github.com/tus/tusd/releases/download/v1.1.0/tusd_linux_amd64.tar.gz
+        mkdir -p tusd
+        tar xf tusd_linux_amd64.tar.gz -C tusd
+        sudo mv tusd/tusd_linux_amd64/tusd /usr/bin/tusd
+        rm -rf tusd_linux_amd64.tar.gz tusd
+    - name: Regression
+      run: |
+        make regression

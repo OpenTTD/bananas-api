@@ -1,0 +1,20 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: info-gs.nut
+  name: info.nut
+- file-upload: lang/english.lng
+  name: lang/english.txt
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "00ef4fe6"
+  content-type: "game-script"
+  unique-id: "52454752"
+- api: new-package/publish

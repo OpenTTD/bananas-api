@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/delete-file
+  filename: valid.grf
+- api: new-package/publish
+  error: "Expecting at least a single file defining the Content Type."

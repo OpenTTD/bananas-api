@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid3.grf
+- file-upload: scenario.scn
+- api: new-package/publish
+  error: "More than one Content Type was detected, where only one was expected. For example, you are uploading both a NewGRF and a Scenario in the same package. This is not possible."

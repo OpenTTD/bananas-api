@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: changelog.txt
+  name: changelog_NL.txt
+- api: new-package/publish
+  error: "changelog_NL.txt: Could not recognise this file; possibly the extension is wrong?"

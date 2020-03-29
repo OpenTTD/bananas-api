@@ -1,0 +1,9 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: info-ai.nut
+  name: info.nut
+- file-upload: utf8_without_bom.nut
+- api: new-package/publish
+  error: "utf8_without_bom.nut: File contains UTF-8 characters but doesn't contain UTF-8 BOM. OpenTTD won't load this file correctly. Please save the file with 'UTF-8 BOM' encoding."

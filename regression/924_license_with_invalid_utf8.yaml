@@ -1,0 +1,11 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: license_invalid_utf8.txt
+  name: license.txt
+- api: new-package/update
+  name: "test"
+  version: "test"
+  license: "Custom"
+- api: new-package/publish
+  error: "license.txt: File contains invalid UTF-8 characters; did you really save it as an UTF-8 file?"

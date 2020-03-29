@@ -1,0 +1,28 @@
+steps:
+- api: user/login
+- api: discover/self
+  packages:
+  - name: "test--test"
+    version: "v1"
+    license: "GPL v2"
+    description: "My Description"
+    url: "https://www.openttd.org/"
+    tags:
+    - "tag1"
+    - "tag2"
+    md5sum-partial: "c81c3d77"
+    content-type: "newgrf"
+    unique-id: "4e4d4c01"
+    availability: "savegames-only"
+  - name: "test--test"
+    version: "v2"
+    license: "GPL v2"
+    description: "My Description"
+    url: "https://www.openttd.org/"
+    tags:
+    - "tag1"
+    - "tag2"
+    md5sum-partial: "fc03854a"
+    content-type: "newgrf"
+    unique-id: "4e4d4c01"
+    availability: "new-games"

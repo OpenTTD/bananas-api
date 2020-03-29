@@ -1,0 +1,25 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: small.obg
+- file-upload: valid.grf
+- file-upload: valid.grf
+  name: valid1.grf
+- file-upload: valid2.grf
+- file-upload: valid3.grf
+- file-upload: valid.grf
+  name: valid4.grf
+- file-upload: valid.grf
+  name: valid5.grf
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "2ee06136"
+  content-type: "base-graphics"
+  unique-id: "534d4c4c"
+- api: new-package/publish

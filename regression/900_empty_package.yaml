@@ -1,0 +1,11 @@
+steps:
+- api: user/login
+- api: new-package/start
+- api: new-package/publish
+  error: "Expecting at least a single file defining the Content Type."
+- api: new-package/publish
+  error: "License is not yet set for this package."
+- api: new-package/publish
+  error: "Version is not yet set for this package."
+- api: new-package/publish
+  error: "Name is not yet set for this package."

@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: readme.txt
+  name: somefile.ppp
+- api: new-package/publish
+  error: "somefile.ppp: Could not recognise this file; possibly the extension is wrong?"

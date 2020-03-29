@@ -1,0 +1,8 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: info-no-base-class.nut
+  name: info.nut
+- api: new-package/publish
+  error: "info.nut: Couldn't parse file to find base class."

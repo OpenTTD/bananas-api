@@ -1,0 +1,11 @@
+steps:
+- api: user/login
+  username: regression2
+- api: new-package/start
+- file-upload: valid3.grf
+- api: new-package/update
+  name: "test"
+  version: "v3"
+  license: "GPL v2"
+- api: new-package/publish
+  error: "You do not have permission to upload a new version for this package."

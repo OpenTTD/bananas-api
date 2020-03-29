@@ -1,0 +1,19 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: main.nut
+- file-upload: info-ai.nut
+  name: info.nut
+- file-upload: utf8_with_bom.nut
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "82b67279"
+  content-type: "ai"
+  unique-id: "52454752"
+- api: new-package/publish

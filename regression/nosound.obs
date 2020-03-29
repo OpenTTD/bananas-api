@@ -1,0 +1,14 @@
+[metadata]
+name         = NoSound
+shortname    = NULL
+version      = 0
+description  = A sound pack without any sounds
+
+[files]
+samples      = nosound.cat
+
+[md5s]
+nosound.cat  = b16a57bf10e42ad2001c921b66bd7d69
+
+[origin]
+default      = Downloaded from BaNaNaS

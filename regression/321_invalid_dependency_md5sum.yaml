@@ -1,0 +1,14 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: scenario.scn
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  dependencies:
+  - content-type: newgrf
+    unique-id: 4e4d4c01
+    md5sum-partial: ffffffff
+  error:
+    dependencies: "No version with md5sum-partial 'ffffffff' exist for newgrf with unique-id '4e4d4c01'."

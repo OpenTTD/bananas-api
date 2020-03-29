@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: readme.txt
+  name: readme_NL.txt
+- api: new-package/publish
+  error: "readme_NL.txt: Could not recognise this file; possibly the extension is wrong?"
