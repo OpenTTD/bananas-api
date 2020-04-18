@@ -356,10 +356,10 @@ async def handle_file_upload(step):
         filename = step["name"]
 
     tus = TusClient("http://127.0.0.1:1080/new-package/tus/")
-    tus.set_headers({"Upload-Token": token})
-    tus.set_headers({"Authorization": auth_headers["Authorization"]})
     try:
-        uploader = tus.uploader(fullpath, chunk_size=5 * 1024 * 1024, metadata={"filename": filename})
+        uploader = tus.uploader(
+            fullpath, chunk_size=5 * 1024 * 1024, metadata={"filename": filename, "upload-token": token}
+        )
     except Exception:
         raise RegressionFailure(f"Couldn't upload file '{filename}'")
     uploader.upload()
