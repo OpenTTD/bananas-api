@@ -33,6 +33,7 @@ TIMER_TIMEOUT = 60 * 15
 
 _timer = defaultdict(lambda: None)
 _sessions = {}
+_tokens = {}
 
 
 def cleanup_session(session):
@@ -48,6 +49,7 @@ def cleanup_session(session):
         os.unlink(file_info["internal_filename"])
         os.unlink(f"{file_info['internal_filename']}.info")
 
+    del _tokens[session["token"]]
     del _sessions[session["user"].full_id]
 
 
@@ -93,7 +95,7 @@ def create_token(user):
     # Change on collision is really low, but would be really annoying. So
     # simply protect against it by looking for an unused UUID.
     token = secrets.token_hex(16)
-    while token in _sessions:
+    while token in _tokens:
         token = secrets.token_hex(16)
 
     session = {
@@ -106,6 +108,7 @@ def create_token(user):
         "announced-files": {},
     }
     _sessions[user.full_id] = session
+    _tokens[token] = user
 
     reset_session_timer(session, first_time=True)
 
@@ -123,6 +126,14 @@ def get_session(user, token):
     reset_session_timer(session)
 
     return session
+
+
+def get_session_by_token(token):
+    if token not in _tokens:
+        return
+
+    user = _tokens[token]
+    return get_session(user, token)
 
 
 def validate_session(session):
