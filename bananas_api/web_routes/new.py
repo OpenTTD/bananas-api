@@ -1,3 +1,4 @@
+import base64
 import logging
 import os
 
@@ -15,6 +16,7 @@ from ..helpers.web_routes import (
     in_header_authorization,
     in_path_file_uuid,
     in_path_upload_token,
+    JSONException,
 )
 from ..new_upload.exceptions import ValidationException
 from ..new_upload.session import (
@@ -42,8 +44,24 @@ async def tusd_handler(request):
     # Example: { "Upload-Length": [ 12 ] } becomes { "Upload-Length": 12 }.
     headers = {k: v[-1] for k, v in headers.items()}
 
-    user = in_header_authorization(headers)
-    upload_token = in_path_upload_token(headers.get("Upload-Token"))
+    try:
+        metadata = dict([e.split(" ") for e in headers.get("Upload-Metadata").split(",")])
+        for key, value in metadata.items():
+            metadata[key] = base64.b64decode(value).decode()
+    except Exception:
+        raise JSONException({"message": "Upload-Metadata header is invalid"})
+
+    # Support Authorization / Upload-Token to come in via either headers or
+    # the metadata. This is mostly done to help out development setups with
+    # a webfrontend. tusd, correctly, sets the CORS headers very strict. This
+    # means the Authorization / Upload-Token header is not accepted. To work
+    # around this, the header can also be in the metadata header.
+    if "Authorization" in metadata:
+        user = in_header_authorization(metadata)
+        upload_token = in_path_upload_token(metadata.get("Upload-Token"))
+    else:
+        user = in_header_authorization(headers)
+        upload_token = in_path_upload_token(headers.get("Upload-Token"))
 
     session = get_session(user, upload_token)
     if session is None:

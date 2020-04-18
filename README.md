@@ -11,7 +11,6 @@
 [![GitHub deployments (Staging)](https://img.shields.io/github/deployments/OpenTTD/bananas-api/staging?label=staging)](https://github.com/OpenTTD/bananas-api/deployments)
 [![GitHub deployments (Production)](https://img.shields.io/github/deployments/OpenTTD/bananas-api/production?label=production)](https://github.com/OpenTTD/bananas-api/deployments)
 
-
 This is the HTTP API for OpenTTD's content service, called BaNaNaS.
 It works together with [bananas-server](https://github.com/OpenTTD/bananas-server), which serves the in-game client.
 
