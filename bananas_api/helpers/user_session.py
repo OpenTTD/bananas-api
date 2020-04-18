@@ -53,7 +53,10 @@ async def check_expire():
     while True:
         await asyncio.sleep(TIME_BETWEEN_CHECKS)
 
-        for user in _sessions.values():
+        # Cast it into a list, as on expire we are going to modify _session.
+        # This would cause "dictionary changed size during iteration"
+        # otherwise.
+        for user in list(_sessions.values()):
             user.check_expire()
 
 
