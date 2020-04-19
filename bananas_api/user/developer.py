@@ -13,8 +13,8 @@ class User(BaseUser):
     routes = web.RouteTableDef()
 
     def get_authorize_page(self):
-        return web.Response(body=
-            "<html><body>"
+        return web.Response(
+            body="<html><body>"
             "<h1>Developer login</h1>"
             "Username:"
             "<form method=POST action='/user/developer'>"
@@ -22,7 +22,8 @@ class User(BaseUser):
             "<input type='text' name='username'>"
             "<input type='submit' value='Login'>"
             "</form></body></html>",
-            content_type="text/html")
+            content_type="text/html",
+        )
 
     def force_login(self, username):
         self.id = username

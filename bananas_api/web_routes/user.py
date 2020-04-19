@@ -15,7 +15,7 @@ from ..helpers.user_session import (
 from ..helpers.web_routes import (
     in_header_authorization,
     in_query_authorize_audience,
-    in_uqery_authorize_code_challenge,
+    in_query_authorize_code_challenge,
     in_query_authorize_code_challenge_method,
     in_query_authorize_redirect_uri,
     in_query_authorize_response_type,
@@ -31,7 +31,9 @@ _clients = {}
 
 
 @click_additional_options
-@click.option("--client-file", help="A YAML file that defines the valid client-ids.", type=click.Path(exists=True, dir_okay=False))
+@click.option(
+    "--client-file", help="A YAML file that defines the valid client-ids.", type=click.Path(exists=True, dir_okay=False)
+)
 def click_client_file(client_file):
     if client_file is None:
         return
@@ -49,7 +51,7 @@ async def login(request):
     in_query_authorize_response_type(request.query.get("response_type"))
     client_id = request.query.get("client_id")
     redirect_uri = in_query_authorize_redirect_uri(request.query.get("redirect_uri"))
-    code_challenge = in_uqery_authorize_code_challenge(request.query.get("code_challenge"))
+    code_challenge = in_query_authorize_code_challenge(request.query.get("code_challenge"))
     in_query_authorize_code_challenge_method(request.query.get("code_challenge_method"))
 
     if client_id not in _clients:
