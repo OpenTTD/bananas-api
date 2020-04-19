@@ -47,8 +47,8 @@ def set_death_signal():
     libc.prctl(PR_SET_PDEATHSIG, signal.SIGTERM, 0, 0, 0)
 
 
-async def _run_tusd(host, tusd_port, web_port, base_path):
-    command = (
+async def _run_tusd(host, tusd_port, web_port, base_path, behind_proxy=False):
+    command = [
         f"tusd",
         f"--host",
         f"{host}",
@@ -60,7 +60,10 @@ async def _run_tusd(host, tusd_port, web_port, base_path):
         f"pre-create,post-create,post-finish",
         f"--base-path",
         f"{base_path}",
-    )
+    ]
+    if behind_proxy:
+        command += ["--behind-proxy"]
+
     tusd_proc = await asyncio.create_subprocess_exec(
         command[0],
         *command[1:],
@@ -86,6 +89,9 @@ def click_logging():
 )
 @click.option("--web-port", help="Port of the web server.", default=80, show_default=True, metavar="PORT")
 @click.option("--tusd-port", help="Port of the tus server.", default=1080, show_default=True, metavar="PORT")
+@click.option(
+    "--behind-proxy", help="Respect X-Forwarded-* and similar headers which may be set by proxies.", is_flag=True
+)
 @common.click_reload_secret
 @click_cleanup_graceperiod
 @click_storage
@@ -94,7 +100,7 @@ def click_logging():
 @click_user_session
 @click_user_github
 @click.option("--validate", help="Only validate BaNaNaS files and exit.", is_flag=True)
-def main(bind, web_port, tusd_port, validate):
+def main(bind, web_port, tusd_port, validate, behind_proxy):
     """
     Start the BaNaNaS API.
 
@@ -124,7 +130,7 @@ def main(bind, web_port, tusd_port, validate):
     for host in bind:
         if ":" in host:
             host = f"[{host}]"
-        loop.create_task(_run_tusd(host, tusd_port, web_port, "/new-package/tus/"))
+        loop.create_task(_run_tusd(host, tusd_port, web_port, "/new-package/tus/", behind_proxy))
 
     # Start aiohttp server
     web.run_app(webapp, host=bind, port=web_port, access_log_class=ErrorOnlyAccessLogger)
