@@ -1,4 +1,3 @@
-import asyncio
 import click
 import secrets
 
@@ -14,7 +13,6 @@ from ..helpers.web_routes import (
 
 GITHUB_CLIENT_ID = None
 GITHUB_CLIENT_SECRET = None
-GITHUB_LOGIN_TIMEOUT = None
 
 _github_states = {}
 
@@ -25,34 +23,26 @@ _github_states = {}
     "--user-github-client-secret",
     help="GitHub client secret. Always use this via an environment variable! (user=github only)",
 )
-@click.option(
-    "--user-github-login-timeout",
-    help="Time a user has to login via GitHub OAuth. (user=github only)",
-    default=60 * 15,
-    show_default=True,
-    metavar="SECONDS",
-)
-def click_user_github(user_github_client_id, user_github_client_secret, user_github_login_timeout):
-    global GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_LOGIN_TIMEOUT
+def click_user_github(user_github_client_id, user_github_client_secret):
+    global GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 
     GITHUB_CLIENT_ID = user_github_client_id
     GITHUB_CLIENT_SECRET = user_github_client_secret
-    GITHUB_LOGIN_TIMEOUT = user_github_login_timeout
 
 
 class User(BaseUser):
     method = "github"
     routes = web.RouteTableDef()
 
-    def __init__(self, bearer_token, redirect_uri=None):
-        super().__init__(bearer_token, redirect_uri)
+    def __init__(self, redirect_uri, code_challenge):
+        super().__init__(redirect_uri, code_challenge)
 
         if not GITHUB_CLIENT_ID or not GITHUB_CLIENT_SECRET:
             raise Exception("GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET should be set via environment")
 
         self._github = GithubClient(client_id=GITHUB_CLIENT_ID, client_secret=GITHUB_CLIENT_SECRET)
 
-    def get_authorize_url(self):
+    def get_authorize_page(self):
         # Change on collision is really low, but would be really annoying. So
         # simply protect against it by looking for an unused UUID.
         state = secrets.token_hex(16)
@@ -62,17 +52,9 @@ class User(BaseUser):
 
         _github_states[self._state] = self
 
-        loop = asyncio.get_event_loop()
-        self._timer = loop.create_task(self._timeout_github())
-
         # We don't set any scope, as we only want the username + id
-        return self._github.get_authorize_url(state=self._state)
-
-    async def _timeout_github(self):
-        await asyncio.sleep(GITHUB_LOGIN_TIMEOUT)
-
-        self._timer = None
-        self._forget_github_state()
+        authorize_url = self._github.get_authorize_url(state=self._state)
+        return web.HTTPFound(location=authorize_url)
 
     @staticmethod
     def get_by_state(state):
@@ -89,23 +71,19 @@ class User(BaseUser):
 
         super().logout()
 
-    async def validate_code(self, code):
+    def _forget_github_state(self):
+        if self._state:
+            del _github_states[self._state]
+
+        self._state = None
+
+    async def get_user_information(self, code):
         # Validate the code and fetch the user info
         await self._github.get_access_token(code)
         user, _ = await self._github.user_info()
 
         self.display_name = user.username
         self.id = str(user.id)
-
-    def _forget_github_state(self):
-        if self._timer:
-            self._timer.cancel()
-            self._timer = None
-
-        if self._state:
-            del _github_states[self._state]
-
-        self._state = None
 
     @staticmethod
     @routes.get("/user/github-callback")
@@ -117,7 +95,6 @@ class User(BaseUser):
         if user is None:
             return web.HTTPNotFound()
 
-        await user.validate_code(code)
-        if user.redirect_uri:
-            return web.HTTPFound(location=user.redirect_uri)
-        return web.HTTPNoContent()
+        await user.get_user_information(code)
+
+        return web.HTTPFound(location=f"{user.redirect_uri}?code={user.code}")

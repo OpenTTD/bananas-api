@@ -1,0 +1,3 @@
+clients:
+- id: regression
+  redirect-uri: http://localhost:12345/

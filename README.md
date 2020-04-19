@@ -39,7 +39,7 @@ python3 -m venv .env
 You can start the HTTP server by running:
 
 ```bash
-.env/bin/python -m bananas_api --web-port 8080 --tusd-port 1080 --storage local --index local --user developer
+.env/bin/python -m bananas_api --web-port 8080 --tusd-port 1080 --storage local --index local --user developer --client-file clients-development.yaml
 ```
 
 This will start the API on port 8080 for you to work with locally.

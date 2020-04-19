@@ -6,5 +6,5 @@ class User(BaseUser):
 
     # TODO -- Implement OpenTTD login
 
-    def get_authorize_url(self):
+    def get_authorize_page(self):
         raise NotImplementedError()

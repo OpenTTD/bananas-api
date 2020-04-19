@@ -1,10 +1,13 @@
 import aiohttp
 import asyncio
+import base64
 import click
 import coloredlogs
 import ctypes
+import hashlib
 import logging
 import os
+import secrets
 import signal
 import sys
 import verboselogs
@@ -35,15 +38,19 @@ class DefinitionFailure(Exception):
     pass
 
 
-async def api_call(request_command, url, json=None, silent=False):
+async def api_call(request_command, url, json=None, data=None, silent=False):
     if request_command == "GET":
-        return await session.get(f"http://127.0.0.1:8080{url}", headers=auth_headers)
+        return await session.get(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
     if request_command == "POST":
-        return await session.post(f"http://127.0.0.1:8080{url}", json=json, headers=auth_headers)
+        return await session.post(
+            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+        )
     if request_command == "PUT":
-        return await session.put(f"http://127.0.0.1:8080{url}", json=json, headers=auth_headers)
+        return await session.put(
+            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+        )
     if request_command == "DELETE":
-        return await session.delete(f"http://127.0.0.1:8080{url}", headers=auth_headers)
+        return await session.delete(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
 
     raise DefinitionFailure(f"Unknown request-command {request_command}")
 
@@ -86,19 +93,51 @@ def match_package_in_list(packages_to_match, packages_to_match_to):
 async def handle_user_login(step):
     validate_keys(step, ["api", "username"])
 
-    result = await api_call("GET", "/user/login?method=developer")
+    code_verifier = secrets.token_hex(32)
+    digest = hashlib.sha256(code_verifier.encode()).digest()
+    code_challenge = base64.urlsafe_b64encode(digest).decode().rstrip("=")
 
+    # Start the OAuth flow
+    result = await api_call(
+        "GET",
+        f"/user/authorize?"
+        f"audience=developer&"
+        f"response_type=code&"
+        f"client_id=regression&"
+        f"redirect_uri=http://localhost:12345/&"
+        f"code_challenge={code_challenge}&"
+        f"code_challenge_method=S256",
+    )
+    if result.status != 200:
+        raise RegressionFailure(f"Couldn't login; status_code={result.status}")
+
+    code = result.headers["Developer-Code"]
+
+    # Set our prefered username
+    username = step.get("username", "regression")
+    result = await api_call("POST", "/user/developer", data=f"username={username}&code={code}")
+    if result.status != 302:
+        raise RegressionFailure(f"Couldn't login; status_code={result.status}")
+
+    code = result.headers["Location"].split("=")[1]
+
+    # Finish the OAuth flow
+    result = await api_call(
+        "POST",
+        "/user/token",
+        json={
+            "code": code,
+            "client_id": "regression",
+            "code_verifier": code_verifier,
+            "redirect_uri": "http://localhost:12345/",
+            "grant_type": "authorization_code",
+        },
+    )
     if result.status != 200:
         raise RegressionFailure(f"Couldn't login; status_code={result.status}")
 
     data = await result.json()
-    auth_headers["Authorization"] = f"Bearer {data['bearer-token']}"
-
-    username = step.get("username", "regression")
-    result = await api_call("POST", "/user/developer", json={"username": username})
-
-    if result.status != 204:
-        raise RegressionFailure(f"Couldn't login; status_code={result.status}")
+    auth_headers["Authorization"] = f"Bearer {data['access_token']}"
 
     log.info(f"Logged in as {username}")
 
@@ -402,6 +441,8 @@ async def _run_api(use_coverage):
                 "1",
                 "--cleanup-graceperiod",
                 "5",
+                "--client-file",
+                os.environ["PYTHONPATH"] + "/regression_runner/clients.yaml",
             ]
         )
         python_proc = await asyncio.create_subprocess_exec(

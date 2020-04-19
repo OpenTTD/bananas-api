@@ -33,6 +33,9 @@ COPY requirements.txt \
         LICENSE \
         README.md \
         .version \
+        clients-development.yaml \
+        clients-production.yaml \
+        clients-staging.yaml \
         /code/
 COPY licenses /code/licenses
 # Needed for Sentry to know what version we are running
@@ -49,4 +52,4 @@ RUN pip freeze 2>/dev/null > requirements.installed \
 COPY bananas_api /code/bananas_api
 
 ENTRYPOINT ["python", "-m", "bananas_api"]
-CMD ["--bind", "0.0.0.0", "--storage", "local", "--index", "local", "--user", "developer"]
+CMD ["--bind", "0.0.0.0", "--storage", "local", "--index", "local", "--user", "developer", "--client-file", "clients-development.yaml"]
