@@ -185,9 +185,9 @@ class UploadNew(OrderedSchema):
     upload_token = fields.String(data_key="upload-token")
 
 
-class UserLogin(OrderedSchema):
-    authorize_url = fields.String(data_key="authorize-url")
-    bearer_token = fields.String(data_key="bearer-token")
+class UserToken(OrderedSchema):
+    access_token = fields.String()
+    token_type = fields.String()
 
 
 class UserProfile(OrderedSchema):

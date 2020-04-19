@@ -48,6 +48,8 @@ def in_path_upload_date(upload_date):
 
 
 def in_path_file_uuid(file_uuid):
+    # tusd generates these uuids, and the least we know is that they are
+    # at least four characters long.
     if len(file_uuid) < 4:
         raise JSONException({"message": "file_uuid seems to be an invalid uuid"})
 
@@ -55,6 +57,8 @@ def in_path_file_uuid(file_uuid):
 
 
 def in_path_upload_token(upload_token):
+    # We generated this token with token_hex(16), and as such should always
+    # be 32 in length.
     if len(upload_token) != 32:
         raise JSONException({"message": "upload_token is not a valid uuid"})
 
@@ -106,20 +110,52 @@ def in_query_since(since):
     return since
 
 
-def in_query_login_method(method):
-    if method is None:
-        raise JSONException({"message": "method is not set in query-string"})
+def in_query_authorize_audience(audience):
+    if audience is None:
+        raise JSONException({"message": "audience is not set in query-string"})
 
-    if method not in get_user_methods():
-        raise JSONException({"message": f"method is not one of the following: {get_user_methods()}"})
+    if audience not in get_user_methods():
+        raise JSONException({"message": f"audience is not one of the following: {get_user_methods()}"})
 
-    return method
+    return audience
+
+
+def in_query_authorize_response_type(response_type):
+    if response_type != "code":
+        raise JSONException({"message": "response_type should be 'code'"})
+
+    return response_type
+
+
+def _redirect_uri(redirect_uri):
+    # Localhost is needed for CLI access; and serving that via https is not
+    # something that is a solved problem.
+    if not redirect_uri.startswith("https://") and not redirect_uri.startswith("http://localhost:"):
+        raise JSONException({"message": "redirect_uri should always start with https://"})
+
+    return redirect_uri
+
+
+def in_query_authorize_redirect_uri(redirect_uri):
+    if redirect_uri is None:
+        raise JSONException({"message": "redirect_uri is not set in query-string"})
+
+    return _redirect_uri(redirect_uri)
+
+
+def in_query_authorize_code_challenge_method(code_challenge_method):
+    if code_challenge_method != "S256":
+        raise JSONException({"message": "code_challenge_method should be 'S256'"})
+
+    return code_challenge_method
 
 
 def in_query_github_code(code):
     if code is None:
         raise JSONException({"message": "code is not set in query-string"})
 
+    # This code is sent by GitHub, and should be at least 20 characters.
+    # GitHub makes no promises over the length.
     if len(code) < 20:
         raise JSONException({"message": "code seems to be an invalid GitHub callback code"})
 
@@ -130,19 +166,35 @@ def in_query_github_state(state):
     if state is None:
         raise JSONException({"message": "state is not set in query-string"})
 
+    # We generated this state with token_hex(16), and as such should always
+    # be 32 in length.
     if len(state) != 32:
         raise JSONException({"message": "state is not a valid uuid"})
 
     return state
 
 
-def in_query_login_redirect_uri(redirect_uri):
+def in_post_token_code(code):
+    if code is None:
+        raise JSONException({"message": "code is not set in payload"})
+
+    # We generated this code with token_hex(16), and as such should always
+    # be 32 in length.
+    if len(code) != 32:
+        raise JSONException({"message": "code is an invalid code"})
+
+    return code
+
+
+def in_post_token_grant_type(grant_type):
+    if grant_type != "authorization_code":
+        raise JSONException({"message": "grant_type should be 'authorization_code'"})
+
+    return grant_type
+
+
+def in_post_token_redirect_uri(redirect_uri):
     if redirect_uri is None:
-        return None
+        raise JSONException({"message": "redirect_uri is not set in POST JSON body"})
 
-    # Localhost is needed for CLI access; and serving that via https is not
-    # something that is a solved problem.
-    if not redirect_uri.startswith("https://") and not redirect_uri.startswith("http://localhost:"):
-        raise JSONException({"message": "redirect_uri should always start with https://"})
-
-    return redirect_uri
+    return _redirect_uri(redirect_uri)
