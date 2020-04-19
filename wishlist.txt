@@ -13,4 +13,4 @@
 - Allow setting versions to "new-games" / "savegames-only" if you like to
 - Set version members to "" should delete them (so that package data becomes active). None is used for "unchanged".
 - Endpoints to get list of licenses and branches
-- Implement client-ids and restrict redirect-uris based on that
+- Check that \r\n are translated to \n properly
