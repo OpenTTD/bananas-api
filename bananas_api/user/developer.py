@@ -13,7 +13,16 @@ class User(BaseUser):
     routes = web.RouteTableDef()
 
     def get_authorize_page(self):
-        return web.json_response({"developer-code": self.code})
+        return web.Response(body=
+            "<html><body>"
+            "<h1>Developer login</h1>"
+            "Username:"
+            "<form method=POST action='/user/developer'>"
+            f"<input type='hidden' name='code' value='{self.code}'>"
+            "<input type='text' name='username'>"
+            "<input type='submit' value='Login'>"
+            "</form></body></html>",
+            content_type="text/html")
 
     def force_login(self, username):
         self.id = username
@@ -22,12 +31,19 @@ class User(BaseUser):
     @staticmethod
     @routes.post("/user/developer")
     async def login_github_callback(request):
-        data = await request.json()
+        data = await request.text()
 
-        username = data["username"]
-        code = data["code"]
+        payload = {}
+        for key_value in data.split("&"):
+            key, _, value = key_value.partition("=")
+            payload[key] = value
+
+        username = payload["username"]
+        code = payload["code"]
 
         user = get_user_by_code(code)
+        if not user:
+            return web.HTTPNotFound()
         user.force_login(username)
 
         return web.HTTPFound(location=f"{user.redirect_uri}?code={user.code}")
