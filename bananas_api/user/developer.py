@@ -23,6 +23,7 @@ class User(BaseUser):
             "<input type='submit' value='Login'>"
             "</form></body></html>",
             content_type="text/html",
+            headers={"Developer-Code": self.code},
         )
 
     def force_login(self, username):

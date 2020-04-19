@@ -38,13 +38,17 @@ class DefinitionFailure(Exception):
     pass
 
 
-async def api_call(request_command, url, json=None, silent=False):
+async def api_call(request_command, url, json=None, data=None, silent=False):
     if request_command == "GET":
         return await session.get(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
     if request_command == "POST":
-        return await session.post(f"http://127.0.0.1:8080{url}", json=json, headers=auth_headers, allow_redirects=False)
+        return await session.post(
+            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+        )
     if request_command == "PUT":
-        return await session.put(f"http://127.0.0.1:8080{url}", json=json, headers=auth_headers, allow_redirects=False)
+        return await session.put(
+            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+        )
     if request_command == "DELETE":
         return await session.delete(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
 
@@ -107,12 +111,11 @@ async def handle_user_login(step):
     if result.status != 200:
         raise RegressionFailure(f"Couldn't login; status_code={result.status}")
 
-    data = await result.json()
-    code = data["developer-code"]
+    code = result.headers["Developer-Code"]
 
     # Set our prefered username
     username = step.get("username", "regression")
-    result = await api_call("POST", "/user/developer", json={"username": username, "code": code})
+    result = await api_call("POST", "/user/developer", data=f"username={username}&code={code}")
     if result.status != 302:
         raise RegressionFailure(f"Couldn't login; status_code={result.status}")
 
