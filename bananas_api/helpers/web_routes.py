@@ -143,6 +143,13 @@ def in_query_authorize_redirect_uri(redirect_uri):
     return _redirect_uri(redirect_uri)
 
 
+def in_uqery_authorize_code_challenge(code_challenge):
+    if len(code_challenge) < 4:
+        raise JSONException({"message": "code_challenge seems to be an invalid base64 sha256 value"})
+
+    return code_challenge
+
+
 def in_query_authorize_code_challenge_method(code_challenge_method):
     if code_challenge_method != "S256":
         raise JSONException({"message": "code_challenge_method should be 'S256'"})

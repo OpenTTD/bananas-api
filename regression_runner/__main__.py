@@ -438,6 +438,8 @@ async def _run_api(use_coverage):
                 "1",
                 "--cleanup-graceperiod",
                 "5",
+                "--client-file",
+                os.environ["PYTHONPATH"] + "/regression_runner/clients.yaml",
             ]
         )
         python_proc = await asyncio.create_subprocess_exec(

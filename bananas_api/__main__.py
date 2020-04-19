@@ -26,6 +26,7 @@ from .web_routes import (
     update,
     user as web_user,
 )
+from .web_routes.user import click_client_file
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +90,7 @@ def click_logging():
 @click_cleanup_graceperiod
 @click_storage
 @click_content_save
+@click_client_file
 @click_user_session
 @click_user_github
 @click.option("--validate", help="Only validate BaNaNaS files and exit.", is_flag=True)

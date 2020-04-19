@@ -1,0 +1,5 @@
+clients:
+- id: ape
+  redirect-uri: "http://localhost:3977/"
+- id: webclient
+  redirect-uri: "https://bananas.openttd.org/"
