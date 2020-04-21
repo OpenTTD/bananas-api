@@ -60,10 +60,10 @@ def _safe_name(name):
             or letter == "."
         ):
             new_name += letter
-        elif new_name[-1] != "_":
+        elif new_name and new_name[-1] != "_":
             new_name += "_"
 
-    return new_name
+    return new_name.strip("._")
 
 
 def _create_tarball(session, filename, tar_path):
