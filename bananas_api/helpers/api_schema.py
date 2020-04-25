@@ -52,6 +52,17 @@ def normalize_message(exception):
     return errors
 
 
+class ValidateURL(validate.URL):
+    def __call__(self, value):
+        if not value:
+            return value
+
+        if len(value) > 95:
+            raise ValidationError("Longer than maximum length 95.")
+
+        return super().__call__(value)
+
+
 class OrderedSchema(Schema):
     class Meta:
         ordered = True
@@ -69,7 +80,7 @@ class Global(OrderedSchema):
     archived = fields.Boolean()
     replaced_by = fields.Nested(ReplacedBy(), data_key="replaced-by", allow_none=True)
     description = fields.String(validate=validate.Length(max=511))
-    url = fields.String(validate=validate.Length(max=95))
+    url = fields.String(validate=ValidateURL())
     tags = fields.List(fields.String(validate=validate.Length(max=31)))
 
 
