@@ -9,6 +9,7 @@ from .click import (
     import_module,
 )
 
+from ..helpers.content_storage import get_indexed_package
 from ..index.local import click_index_local
 from ..index.github import click_index_github
 
@@ -16,7 +17,7 @@ log = logging.getLogger(__name__)
 
 TIMER_TIMEOUT = 60 * 5
 
-_pending_changes = defaultdict(list)
+_pending_changes = defaultdict(set)
 _timer = defaultdict(lambda: None)
 _index_instance = None
 
@@ -33,7 +34,9 @@ def store_on_disk(user, package=None):
         _store_on_disk_safe(package, user.display_name)
 
     while _pending_changes[user.full_id]:
-        package = _pending_changes[user.full_id].pop()
+        content_type, unique_id = _pending_changes[user.full_id].pop()
+        package = get_indexed_package(content_type, unique_id)
+
         _store_on_disk_safe(package, user.display_name)
 
     _index_instance.commit()
@@ -47,7 +50,7 @@ async def _timer_handler(user):
 
 
 def queue_store_on_disk(user, package):
-    _pending_changes[user.full_id].append(package)
+    _pending_changes[user.full_id].add((package["content_type"], package["unique_id"]))
 
     # Per user, start a timer. If it expires, we push the update. This
     # allows a user to take a bit of time to get its edits right, before we
