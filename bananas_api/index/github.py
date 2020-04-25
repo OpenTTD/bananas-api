@@ -57,8 +57,8 @@ class Index(LocalIndex):
         self._fetch_latest()
         super().reload()
 
-    def commit(self):
-        super().commit()
+    def push_changes(self):
+        super().push_changes()
 
         if not self._ssh_command:
             log.error("No GitHub private key supplied; cannot push to GitHub.")
