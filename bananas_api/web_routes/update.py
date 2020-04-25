@@ -83,10 +83,22 @@ async def version_update(request):
             {"message": "request body failed validation", "errors": normalize_message(e)}, status=400
         )
 
+    # The only field you are not allowed to make empty (and which you can
+    # change), is "version", so do some extra validation there.
+    if "version" in data and not len(data["version"].strip()):
+        return web.json_response(
+            {"message": "request body failed validation", "errors": {"version": ["Cannot be empty"]}}, status=400
+        )
+
     # Update the record with the changed fields and schedule for commit
     for key, value in data.items():
         if isinstance(value, str):
-            version[key] = value.strip()
+            value = value.strip()
+            version[key] = value
+
+            # Setting an empty string means: use the one from global.
+            if value == "":
+                del version[key]
         else:
             version[key] = value
 
