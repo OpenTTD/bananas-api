@@ -42,6 +42,12 @@ class Index(CommonDiskIndex):
         for filename in files:
             self._git.index.add(filename)
 
+        # Check if there was anything to commit; possibly someone changed an
+        # edit back to the original, meaning we are about to commit an empty
+        # commit. That would be silly of course.
+        if not self._git.index.diff("HEAD"):
+            return
+
         commit_message = f"Update: {change}"
 
         self._git.index.commit(
