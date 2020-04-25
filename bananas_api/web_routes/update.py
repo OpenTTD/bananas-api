@@ -27,9 +27,8 @@ async def package_update(request):
     unique_id = in_path_unique_id(request.match_info["unique_id"])
     user = in_header_authorization(request.headers)
 
-    try:
-        package = get_indexed_package(content_type, unique_id)
-    except KeyError:
+    package = get_indexed_package(content_type, unique_id)
+    if not package:
         return web.HTTPNotFound()
 
     for author in package["authors"]:
@@ -76,9 +75,8 @@ async def version_update(request):
     upload_date = in_path_upload_date(request.match_info["upload_date"])
     user = in_header_authorization(request.headers)
 
-    try:
-        package = get_indexed_package(content_type, unique_id)
-    except KeyError:
+    package = get_indexed_package(content_type, unique_id)
+    if not package:
         return web.HTTPNotFound()
 
     for author in package["authors"]:
@@ -87,9 +85,8 @@ async def version_update(request):
     else:
         return web.HTTPNotFound()
 
-    try:
-        version = get_indexed_version(content_type, unique_id, upload_date)
-    except KeyError:
+    version = get_indexed_version(content_type, unique_id, upload_date)
+    if not version:
         return web.HTTPNotFound()
 
     try:
