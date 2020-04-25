@@ -26,19 +26,18 @@ class Index(CommonDiskIndex):
 
     def commit(self):
         files = self.files[:]
-        changes = self.changes[:]
         self.files = []
-        self.changes = []
+
+        change = self.change
+        self.change = None
 
         for filename in files:
             self._git.index.add(filename)
 
-        commit_message = "".join([f"\n - {change}" for change in changes])
+        commit_message = f"Update: {change}"
 
         self._git.index.commit(
-            f"Update: changes made via content-api\n{commit_message}",
-            author=self._git_author,
-            committer=self._git_author,
+            commit_message, author=self._git_author, committer=self._git_author,
         )
 
 

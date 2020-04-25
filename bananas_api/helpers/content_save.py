@@ -39,7 +39,7 @@ def store_on_disk(user, package=None):
 
         _store_on_disk_safe(package, user.display_name)
 
-    _index_instance.commit()
+    _index_instance.push_changes()
 
 
 async def _timer_handler(user):

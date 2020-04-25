@@ -75,7 +75,7 @@ class Index:
     def __init__(self, folder):
         self.folder = folder
         self.files = []
-        self.changes = []
+        self.change = None
 
     def _read_content_entry(self, content_type, folder_name, unique_id):
         folder_name = f"{folder_name}/{unique_id}"
@@ -117,6 +117,12 @@ class Index:
     def reload(self):
         clear_indexed_packages()
         self.load_all()
+
+    def commit(self):
+        pass
+
+    def push_changes(self):
+        pass
 
     def load_all(self):
         # Because we are loaded the content, there is no way to already do
@@ -169,7 +175,8 @@ class Index:
                 raise Exception("Failed to load content entries: %r" % errors)
 
     def store_package(self, package, display_name):
-        self.changes.append(f"{package['content_type'].value}/{package['unique_id']} (by {display_name})")
+        self.change = f"{package['content_type'].value}/{package['unique_id']} (by {display_name})"
+
         path = f"{package['content_type'].value}/{package['unique_id']}"
 
         os.makedirs(f"{self.folder}/{path}/versions", exist_ok=True)
@@ -203,3 +210,5 @@ class Index:
                 if data_overwrite:
                     fp.write("\n")
                     fp.write(yaml_dump(data_overwrite))
+
+        self.commit()
