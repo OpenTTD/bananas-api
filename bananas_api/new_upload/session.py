@@ -79,7 +79,7 @@ def reset_session_timer(session, first_time=False):
 @click.option(
     "--cleanup-graceperiod",
     help="Graceperiod between cleanup of new uploads.",
-    default=60 * 15,
+    default=60 * 60 * 14,
     show_default=True,
     metavar="SECONDS",
 )
