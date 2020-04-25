@@ -45,9 +45,25 @@ async def package_update(request):
             {"message": "request body failed validation", "errors": normalize_message(e)}, status=400
         )
 
+    # The only field you are not allowed to make empty (and which you can
+    # change), is "version", so do some extra validation there.
+    if "name" in data and not len(data["name"].strip()):
+        return web.json_response(
+            {"message": "request body failed validation", "errors": {"name": ["Cannot be empty"]}}, status=400
+        )
+
     # Update the record with the changed fields and schedule for commit
     for key, value in data.items():
-        package[key] = value
+        if isinstance(value, str):
+            value = value.strip()
+            package[key] = value
+
+            # Setting an empty string means: use the one from global.
+            if value == "":
+                del package[key]
+        else:
+            package[key] = value
+
     queue_store_on_disk(user, package)
 
     return web.HTTPNoContent()
