@@ -216,7 +216,14 @@ def update_session(session, data):
 
     for key, value in data.items():
         if isinstance(value, str):
-            session[key] = value.strip()
+            value = value.strip()
+            session[key] = value
+
+            # Setting an empty string means: use the one from global. In case
+            # it is for a setting that should not be empty, validation will
+            # fail.
+            if value == "":
+                del session[key]
         else:
             session[key] = value
 
