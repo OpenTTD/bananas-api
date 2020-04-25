@@ -20,9 +20,17 @@ class Index(CommonDiskIndex):
         try:
             self._git = git.Repo(self.folder)
         except git.exc.NoSuchPathError:
-            self._git = git.Repo.init(self.folder)
+            self._init_repository()
         except git.exc.InvalidGitRepositoryError:
-            self._git = git.Repo.init(self.folder)
+            self._init_repository()
+
+    def _init_repository(self):
+        self._git = git.Repo.init(self.folder)
+        # Always make sure there is a commit in the working tree, otherwise
+        # HEAD is invalid, which results in other nasty problems.
+        self._git.index.commit(
+            "Add: initial empty commit", author=self._git_author, committer=self._git_author,
+        )
 
     def commit(self):
         files = self.files[:]
