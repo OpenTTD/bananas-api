@@ -68,7 +68,7 @@ def reset_session_timer(session, first_time=False):
 
         _timer[session["user"].full_id].cancel()
 
-    # Per user, start a timer. If it expires, we remove the cnontent. This
+    # Per user, start a timer. If it expires, we remove the content. This
     # means that if a user failed to publish within a reasonable amount of
     # time, we reclaim the diskspace.
     loop = asyncio.get_event_loop()
