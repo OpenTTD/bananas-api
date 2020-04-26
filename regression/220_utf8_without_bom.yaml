@@ -2,7 +2,7 @@ steps:
 - api: user/login
 - api: new-package/start
 - file-upload: main.nut
-- file-upload: info-ai.nut
+- file-upload: ai-tarball/info.nut
   name: info.nut
 - file-upload: utf8_without_bom.nut
 - api: new-package/publish

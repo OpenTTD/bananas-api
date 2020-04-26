@@ -1,9 +1,7 @@
 steps:
 - api: user/login
 - api: new-package/start
-- file-upload: main.nut
-- file-upload: info-gs.nut
-  name: info.nut
+- file-upload: gs.zip
 - file-upload: lang/english.lng
   name: lang/english.txt
 - api: new-package/update

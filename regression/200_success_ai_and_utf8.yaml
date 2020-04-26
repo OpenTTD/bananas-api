@@ -1,9 +1,7 @@
 steps:
 - api: user/login
 - api: new-package/start
-- file-upload: main.nut
-- file-upload: info-ai.nut
-  name: info.nut
+- file-upload: ai.tar
 - file-upload: utf8_with_bom.nut
 - api: new-package/update
   name: "test"
