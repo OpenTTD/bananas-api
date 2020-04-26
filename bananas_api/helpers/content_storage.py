@@ -26,6 +26,10 @@ def add_to_blacklist(content_type, unique_id):
     local_storage.blacklist[content_type].add(unique_id)
 
 
+def is_on_blacklist(content_type, unique_id):
+    return unique_id in local_storage.blacklist[content_type]
+
+
 def get_highest_scenario_heightmap_id():
     return local_storage.highest_scenario_heightmap_id
 
