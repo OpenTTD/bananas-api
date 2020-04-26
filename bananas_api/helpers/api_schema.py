@@ -12,6 +12,7 @@ from marshmallow_enum import EnumField
 from .content_storage import get_indexed_package
 from .enums import (
     Availability,
+    Branch,
     ContentType,
     License,
     Status,
@@ -124,7 +125,7 @@ class Dependency(OrderedSchema):
 
 
 class Compatability(OrderedSchema):
-    name = fields.String()
+    name = EnumField(Branch, by_value=True)
     conditions = fields.List(fields.String(), validate=validate.Length(min=1, max=2))
 
     @validates("conditions")
@@ -203,3 +204,19 @@ class UserToken(OrderedSchema):
 
 class UserProfile(OrderedSchema):
     display_name = fields.String(data_key="display-name")
+
+
+class ConfigUserAudience(OrderedSchema):
+    name = fields.String()
+    description = fields.String()
+    settings_url = fields.String(data_key="settings-url")
+
+
+class ConfigLicense(OrderedSchema):
+    name = fields.String()
+    deprecated = fields.Boolean()
+
+
+class ConfigBranch(OrderedSchema):
+    name = fields.String()
+    description = fields.String()

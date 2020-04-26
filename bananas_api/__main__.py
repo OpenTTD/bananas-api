@@ -20,6 +20,7 @@ from .new_upload.session_publish import click_storage
 from .user.github import click_user_github
 from .web_routes import (
     common,
+    config,
     discover,
     fallback,
     new,
@@ -115,6 +116,7 @@ def main(bind, web_port, tusd_port, validate, behind_proxy):
 
     webapp = web.Application()
     webapp.add_routes(common.routes)
+    webapp.add_routes(config.routes)
     webapp.add_routes(discover.routes)
     webapp.add_routes(new.routes)
     webapp.add_routes(update.routes)

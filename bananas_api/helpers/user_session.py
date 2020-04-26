@@ -68,6 +68,10 @@ def get_user_methods():
     return _methods.keys()
 
 
+def get_user_method(method):
+    return _methods.get(method)
+
+
 def register_webroutes(webapp):
     for method in _methods.values():
         if hasattr(method, "routes"):
