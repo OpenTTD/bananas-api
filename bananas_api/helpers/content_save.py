@@ -9,7 +9,6 @@ from .click import (
     import_module,
 )
 
-from ..helpers.content_storage import get_indexed_package
 from ..index.local import click_index_local
 from ..index.github import click_index_github
 
@@ -18,6 +17,7 @@ log = logging.getLogger(__name__)
 TIMER_TIMEOUT = 60 * 5
 
 _pending_changes = defaultdict(set)
+_pending_package = {}
 _timer = defaultdict(lambda: None)
 _index_instance = None
 
@@ -35,7 +35,14 @@ def store_on_disk(user, package=None):
 
     while _pending_changes[user.full_id]:
         content_type, unique_id = _pending_changes[user.full_id].pop()
-        package = get_indexed_package(content_type, unique_id)
+        package = _pending_package.get((content_type, unique_id))
+
+        # This can happen if 2 authors change a package at the same time. One
+        # of them will cause a commit, so when the other timer expires, the
+        # package is no longer known
+        if package is None:
+            continue
+        del _pending_package[(content_type, unique_id)]
 
         _store_on_disk_safe(package, user.display_name)
 
@@ -51,6 +58,9 @@ async def _timer_handler(user):
 
 def queue_store_on_disk(user, package):
     _pending_changes[user.full_id].add((package["content_type"], package["unique_id"]))
+    # Store the package object here; in case of a reload, the data would
+    # otherwise be gone.
+    _pending_package[(package["content_type"], package["unique_id"])] = package
 
     # Per user, start a timer. If it expires, we push the update. This
     # allows a user to take a bit of time to get its edits right, before we
