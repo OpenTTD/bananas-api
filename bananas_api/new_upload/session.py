@@ -23,7 +23,10 @@ from .session_validation import (
 )
 from .validate import validate_files
 from ..helpers.click import click_additional_options
-from ..helpers.content_storage import get_indexed_package
+from ..helpers.content_storage import (
+    get_indexed_package,
+    is_on_blacklist,
+)
 from ..helpers.enums import Status
 
 log = logging.getLogger(__name__)
@@ -166,6 +169,8 @@ def validate_session(session):
     validate_version(session)
 
     if "content_type" in session:
+        if is_on_blacklist(session["content_type"], session["unique_id"]):
+            session["errors"].append("This content-type + unique-id is blacklisted.")
         package = get_indexed_package(session["content_type"], session["unique_id"])
     else:
         package = None
