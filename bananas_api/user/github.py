@@ -43,7 +43,7 @@ class User(BaseUser):
         self._github = GithubClient(client_id=GITHUB_CLIENT_ID, client_secret=GITHUB_CLIENT_SECRET)
 
     def get_authorize_page(self):
-        # Change on collision is really low, but would be really annoying. So
+        # Chance on collision is really low, but would be really annoying. So
         # simply protect against it by looking for an unused UUID.
         state = secrets.token_hex(16)
         while state in _github_states:

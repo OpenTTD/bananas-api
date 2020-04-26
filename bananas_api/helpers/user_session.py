@@ -25,7 +25,7 @@ def create_user_with_method(method, redirect_uri, code_challenge):
 
 
 def create_bearer_token():
-    # Change on collision is really low, but would be really annoying. So
+    # Chance on collision is really low, but would be really annoying. So
     # simply protect against it by looking for an unused UUID.
     bearer_token = secrets.token_hex(16)
     while bearer_token in _sessions_by_bearer:
