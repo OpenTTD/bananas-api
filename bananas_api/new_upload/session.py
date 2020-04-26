@@ -147,6 +147,13 @@ def get_session_by_token(token):
     return get_session(user, token)
 
 
+def validate_unique_filenames(session):
+    counter = Counter([file_info["filename"] for file_info in session["files"]])
+    doubles = [filename for filename, count in counter.items() if count > 1]
+    for double in doubles:
+        session["errors"].append(f"File '{double}' exists more than once")
+
+
 def validate_session(session):
     session["errors"] = []
     session["warnings"] = []
@@ -163,6 +170,8 @@ def validate_session(session):
 
             for error in file_info["errors"]:
                 session["errors"].append(f"{file_info['filename']}: {error}")
+
+    validate_unique_filenames(session)
 
     validate_is_valid_package(session, data)
     validate_license(session)
