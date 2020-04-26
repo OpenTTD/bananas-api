@@ -103,7 +103,7 @@ def get_login_expire():
 @click.option(
     "--user",
     help="User backend to use (can have multiple).",
-    type=click.Choice(["developer", "github", "openttd"], case_sensitive=False),
+    type=click.Choice(["developer", "github"], case_sensitive=False),
     required=True,
     multiple=True,
     callback=import_module("bananas_api.user", "User"),
