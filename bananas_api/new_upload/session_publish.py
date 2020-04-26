@@ -67,7 +67,7 @@ def _safe_name(name):
 
 
 def _create_tarball(session, filename, tar_path):
-    with tarfile.open(filename, mode="w:gz") as tar:
+    with tarfile.open(filename, mode="w:gz", format=tarfile.USTAR_FORMAT) as tar:
         for file_info in sorted(session["files"], key=lambda x: x["filename"]):
             arcname = f"{tar_path}/{file_info['filename']}"
             tar.add(file_info["internal_filename"], arcname=arcname)
