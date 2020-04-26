@@ -95,7 +95,7 @@ def create_token(user):
     if user.full_id in _sessions:
         cleanup_session(_sessions[user.full_id])
 
-    # Change on collision is really low, but would be really annoying. So
+    # Chance on collision is really low, but would be really annoying. So
     # simply protect against it by looking for an unused UUID.
     token = secrets.token_hex(16)
     while token in _tokens:
