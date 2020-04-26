@@ -98,3 +98,11 @@ class User(BaseUser):
         await user.get_user_information(code)
 
         return web.HTTPFound(location=f"{user.redirect_uri}?code={user.code}")
+
+    @staticmethod
+    def get_description():
+        return "Login via GitHub"
+
+    @staticmethod
+    def get_settings_url():
+        return f"https://github.com/settings/connections/applications/{GITHUB_CLIENT_ID}"

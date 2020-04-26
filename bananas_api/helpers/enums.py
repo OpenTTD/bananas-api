@@ -46,6 +46,10 @@ class License(Enum):
     CUSTOM = "Custom"
 
 
+class Branch(Enum):
+    OFFICIAL_OPENTTD = "master"
+
+
 class Availability(Enum):
     NEW_GAMES = "new-games"
     SAVEGAMES_ONLY = "savegames-only"

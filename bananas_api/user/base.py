@@ -69,3 +69,11 @@ class User:
 
     def get_authorize_page(self):
         raise NotImplementedError()
+
+    @staticmethod
+    def get_description():
+        raise NotImplementedError()
+
+    @staticmethod
+    def get_settings_url():
+        raise NotImplementedError()

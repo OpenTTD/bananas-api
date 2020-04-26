@@ -49,3 +49,11 @@ class User(BaseUser):
         user.force_login(username)
 
         return web.HTTPFound(location=f"{user.redirect_uri}?code={user.code}")
+
+    @staticmethod
+    def get_description():
+        return "Login as developer"
+
+    @staticmethod
+    def get_settings_url():
+        return ""
