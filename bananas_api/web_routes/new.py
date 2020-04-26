@@ -163,12 +163,15 @@ async def new_delete_file(request):
     if session is None:
         return web.HTTPNotFound()
 
-    for file_info in session["files"]:
+    for file_info in list(session["files"]):
         if file_info["uuid"] == file_uuid:
+            session["files"].remove(file_info)
+
             internal_filename = file_info["internal_filename"]
             os.remove(internal_filename)
-            os.remove(f"{internal_filename}.info")
-            session["files"].remove(file_info)
+            if not internal_filename.startswith("data/tar/"):
+                os.remove(f"{internal_filename}.info")
+
             break
     else:
         return web.HTTPNotFound()
