@@ -115,7 +115,7 @@ def create_tarball(session):
         name = package["name"]
 
     # Create the tarball and move it into the storage system.
-    tempfile_tar = NamedTemporaryFile(dir=".", delete=False)
+    tempfile_tar = NamedTemporaryFile(dir=".", delete=False, suffix=".tar")
     tar_path = _safe_name(name) + "-" + _safe_name(session["version"])
     try:
         filesize = _create_tarball(session, tempfile_tar.name, tar_path)
