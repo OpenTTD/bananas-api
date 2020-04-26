@@ -4,9 +4,16 @@ import logging
 import os
 import secrets
 
-from collections import defaultdict
+from collections import (
+    Counter,
+    defaultdict,
+)
 
 from .exceptions import ValidationException
+from .extract import (
+    extract_tarball,
+    extract_zip,
+)
 from .session_publish import (
     create_package,
     create_tarball,
@@ -50,7 +57,8 @@ def cleanup_session(session):
 
     for file_info in session["files"]:
         os.unlink(file_info["internal_filename"])
-        os.unlink(f"{file_info['internal_filename']}.info")
+        if not file_info["internal_filename"].startswith("data/tar/"):
+            os.unlink(f"{file_info['internal_filename']}.info")
 
     del _tokens[session["token"]]
     del _sessions[session["user"].full_id]
@@ -224,7 +232,16 @@ def add_file(session, uuid, filename, filesize, internal_filename, announcing=Fa
         if uuid in session["announced-files"]:
             del session["announced-files"][uuid]
 
-        session["files"].append(new_file)
+        if filename.lower().endswith((".tar", ".tar.gz", ".tgz")):
+            session["files"].extend(extract_tarball(new_file))
+            os.unlink(new_file["internal_filename"])
+            os.unlink(f"{new_file['internal_filename']}.info")
+        elif filename.lower().endswith((".zip")):
+            session["files"].extend(extract_zip(new_file))
+            os.unlink(new_file["internal_filename"])
+            os.unlink(f"{new_file['internal_filename']}.info")
+        else:
+            session["files"].append(new_file)
 
 
 def update_session(session, data):
