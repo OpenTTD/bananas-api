@@ -6,6 +6,7 @@ from .click import (
     click_additional_options,
     import_module,
 )
+from ..new_upload.session import invalidate_session_of_user
 
 _sessions_by_bearer = {}
 _sessions_by_code = {}
@@ -55,6 +56,8 @@ def handover_to_bearer(user, bearer_token):
 
 
 def delete_user(user):
+    invalidate_session_of_user(user)
+
     if user.bearer_token:
         del _sessions_by_bearer[user.bearer_token]
     if user.code:

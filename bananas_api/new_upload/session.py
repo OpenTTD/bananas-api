@@ -115,6 +115,14 @@ def create_token(user):
     return token
 
 
+def invalidate_session_of_user(user):
+    if user.full_id not in _sessions:
+        return
+
+    session = _sessions[user.full_id]
+    cleanup_session(session)
+
+
 def get_session(user, token):
     if user.full_id not in _sessions:
         return
