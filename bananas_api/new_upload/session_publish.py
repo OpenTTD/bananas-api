@@ -143,7 +143,7 @@ def create_package(session):
     for field in ("upload-date", "md5sum-partial", "filesize", "license", "version"):
         version_data[field] = raw_data[field]
     for field in ("dependencies", "compatibility"):
-        if field in session:
+        if field in raw_data:
             version_data[field] = raw_data[field]
 
     package = get_indexed_package(session["content_type"], session["unique_id"])
@@ -155,6 +155,10 @@ def create_package(session):
         for version in package["versions"]:
             if version["availability"] == Availability.NEW_GAMES:
                 version["availability"] = Availability.SAVEGAMES_ONLY
+
+        for field in ("name", "description", "url", "tags"):
+            if field in raw_data:
+                version_data[field] = raw_data[field]
     else:
         # This is a new package, so construct it from the ground up. Run it
         # through the validator, just to make sure we are adding valid
@@ -163,14 +167,14 @@ def create_package(session):
         package_data = {
             "content-type": session["content_type"].value,
             "unique-id": session["unique_id"],
-            "name": session["name"],
+            "name": raw_data["name"],
             "authors": [{"display-name": session["user"].display_name, session["user"].method: session["user"].id}],
             "versions": [],
         }
 
         for field in ("description", "url", "tags"):
-            if field in session:
-                package_data[field] = session[field]
+            if field in raw_data:
+                package_data[field] = raw_data[field]
 
         package = Package().load(package_data)
 
