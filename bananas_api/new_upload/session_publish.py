@@ -107,9 +107,16 @@ def create_tarball(session):
         increase_scenario_heightmap_id()
         session["unique_id"] = "%08x" % get_highest_scenario_heightmap_id()
 
+    name = session.get("name")
+    if not name:
+        # If the name is empty, we are an update of an existing package, so
+        # use the name of the existing package.
+        package = get_indexed_package(session["content_type"], session["unique_id"])
+        name = package["name"]
+
     # Create the tarball and move it into the storage system.
     tempfile_tar = NamedTemporaryFile(dir=".", delete=False)
-    tar_path = _safe_name(session["name"]) + "-" + _safe_name(session["version"])
+    tar_path = _safe_name(name) + "-" + _safe_name(session["version"])
     try:
         filesize = _create_tarball(session, tempfile_tar.name, tar_path)
         _storage_instance.move_to_storage(
