@@ -1,5 +1,6 @@
 import base64
 import click
+import git
 import logging
 import tempfile
 import os
@@ -60,7 +61,12 @@ class Index(LocalIndex):
         # Checkout the latest master, removing and commits/file changes local
         # might have.
         with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
-            origin.fetch()
+            try:
+                origin.fetch()
+            except git.exc.BadName:
+                # When the garbage collector kicks in, GitPython gets confused and
+                # throws a BadName. The best solution? Just run it again.
+                origin.fetch()
         origin.refs.master.checkout(force=True, B="master")
         for file_name in self._git.untracked_files:
             os.unlink(f"{self.folder}/{file_name}")
