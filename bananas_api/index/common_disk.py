@@ -124,7 +124,7 @@ class Index:
     def push_changes(self):
         pass
 
-    def load_all(self):
+    def load_all(self, validate=False):
         # Because we are loaded the content, there is no way to already do
         # dependency validation. So for now, disable it. After we loaded
         # everything, we will give it another pass to validate dependencies.
@@ -141,6 +141,10 @@ class Index:
                 try:
                     package = self._read_content_entry(content_type, folder_name, unique_id)
                 except Exception:
+                    # During validation, any error is enough to bail out
+                    if validate:
+                        raise
+
                     log.exception(f"Failed to load entry {folder_name}/{unique_id}. Skipping.")
                     continue
 
