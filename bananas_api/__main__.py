@@ -100,8 +100,7 @@ def click_logging():
 @click_client_file
 @click_user_session
 @click_user_github
-@click.option("--validate", help="Only validate BaNaNaS files and exit.", is_flag=True)
-def main(bind, web_port, tusd_port, validate, behind_proxy):
+def main(bind, web_port, tusd_port, behind_proxy):
     """
     Start the BaNaNaS API.
 
@@ -110,9 +109,6 @@ def main(bind, web_port, tusd_port, validate, behind_proxy):
 
     BANANAS_API_RELOAD_SECRET="test" python -m bananas_api
     """
-
-    if validate:
-        return
 
     webapp = web.Application()
     webapp.add_routes(common.routes)

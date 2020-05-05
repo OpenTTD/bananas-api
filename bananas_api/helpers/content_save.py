@@ -1,6 +1,7 @@
 import asyncio
 import click
 import logging
+import sys
 
 from collections import defaultdict
 
@@ -89,13 +90,16 @@ def queue_store_on_disk(user, package):
     show_default=True,
     metavar="SECONDS",
 )
-def click_content_save(index, commit_graceperiod):
+@click.option("--validate", help="Only validate BaNaNaS files and exit.", is_flag=True)
+def click_content_save(index, commit_graceperiod, validate):
     global TIMER_TIMEOUT, _index_instance
 
     TIMER_TIMEOUT = commit_graceperiod
     _index_instance = index()
 
-    _index_instance.load_all()
+    _index_instance.load_all(validate=validate)
+    if validate:
+        sys.exit(0)
 
 
 def reload_index():
