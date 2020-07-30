@@ -14,6 +14,8 @@
 This is the HTTP API for OpenTTD's content service, called BaNaNaS.
 It works together with [bananas-server](https://github.com/OpenTTD/bananas-server), which serves the in-game client.
 
+The API is documented on [SwaggerHub](https://app.swaggerhub.com/apis-docs/OpenTTD/OpenTTD-content-api/1.0.0).
+
 ## Development
 
 This API is written in Python 3.8 with aiohttp, and makes strong use of asyncio.
