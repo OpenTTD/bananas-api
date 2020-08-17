@@ -14,6 +14,8 @@
 This is the HTTP API for OpenTTD's content service, called BaNaNaS.
 It works together with [bananas-server](https://github.com/OpenTTD/bananas-server), which serves the in-game client.
 
+See [introduction.md](docs/introduction.md) for more documentation about the different BaNaNaS components and how they work together.
+
 The API is documented on [SwaggerHub](https://app.swaggerhub.com/apis-docs/OpenTTD/OpenTTD-content-api/1.0.0).
 
 ## Development
@@ -69,7 +71,3 @@ This means that for clients, you need to contact two endpoints:
 In production the Load Balancer redirects the URLs to the right ports, but during development this is something to keep in mind.
 
 [bananas-frontend-cli](https://github.com/OpenTTD/bananas-frontend-cli) for example allows you to define the web-endpoint and the tusd-endpoint.
-
-## Documentation
-
-See [docs/](docs/introduction.md) for more documentation about the different BaNaNaS components and how they work together.
