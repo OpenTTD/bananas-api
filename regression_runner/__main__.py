@@ -337,9 +337,9 @@ async def handle_new_delete_file(step):
         result = await api_call("DELETE", f"/new-package/{token}/{step['uuid']}")
 
         if result.status != 404:
-            raise RegressionFailure(f"Could delete file, but that should be impossible")
+            raise RegressionFailure("Could delete file, but that should be impossible")
 
-        log.info(f"Failed to remove file (expected)")
+        log.info("Failed to remove file (expected)")
         return
 
     result = await api_call("GET", f"/new-package/{token}")

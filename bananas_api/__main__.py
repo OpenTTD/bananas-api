@@ -50,16 +50,16 @@ def set_death_signal():
 
 async def _run_tusd(host, tusd_port, web_port, base_path, behind_proxy=False):
     command = [
-        f"tusd",
-        f"--host",
+        "tusd",
+        "--host",
         f"{host}",
-        f"--port",
+        "--port",
         f"{tusd_port}",
-        f"--hooks-http",
+        "--hooks-http",
         f"http://127.0.0.1:{web_port}/new-package/tusd-internal",
-        f"--hooks-enabled-events",
-        f"pre-create,post-create,post-finish",
-        f"--base-path",
+        "--hooks-enabled-events",
+        "pre-create,post-create,post-finish",
+        "--base-path",
         f"{base_path}",
     ]
     if behind_proxy:
