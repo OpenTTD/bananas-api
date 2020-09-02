@@ -1,0 +1,7 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: empty
+  name: empty.zip
+- api: new-package/publish
+  error: "empty.zip: couldn't extract archive file; is it a valid zipfile?"

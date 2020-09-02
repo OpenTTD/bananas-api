@@ -1,3 +1,7 @@
+class ArchiveError(Exception):
+    """Failed to read an uploaded archive"""
+
+
 class ValidationException(Exception):
     pass
 

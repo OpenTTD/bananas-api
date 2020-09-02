@@ -1,0 +1,15 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: empty
+  name: empty.tar
+- file-upload: empty
+  name: empty.tar.gz
+- file-upload: empty
+  name: empty.tgz
+- api: new-package/publish
+  error: "empty.tar: couldn't extract archive file; is it a valid tarball?"
+- api: new-package/publish
+  error: "empty.tar.gz: couldn't extract archive file; is it a valid tarball?"
+- api: new-package/publish
+  error: "empty.tgz: couldn't extract archive file; is it a valid tarball?"
