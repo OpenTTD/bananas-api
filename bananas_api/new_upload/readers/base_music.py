@@ -6,7 +6,12 @@ class BaseMusic(BaseSet):
     package_type = PackageType.BASE_MUSIC
 
     INI_VALIDATION = {
-        "metadata": {"name": str, "shortname": str, "version": str, "description": str,},
+        "metadata": {
+            "name": str,
+            "shortname": str,
+            "version": str,
+            "description": str,
+        },
         "files": {
             "theme": str,
             "old_0": str,
@@ -42,5 +47,7 @@ class BaseMusic(BaseSet):
         },
         "md5s": list,
         "names": list,
-        "origin": {"default": str,},
+        "origin": {
+            "default": str,
+        },
     }

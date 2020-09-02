@@ -77,7 +77,11 @@ def extract_tarball(file_info):
     files = []
 
     with tarfile.open(file_info["internal_filename"]) as tar:
-        root_folder = _find_root_folder(tar, get_name=lambda info: info.name, is_file=lambda info: info.isfile(),)
+        root_folder = _find_root_folder(
+            tar,
+            get_name=lambda info: info.name,
+            is_file=lambda info: info.isfile(),
+        )
 
         files = _extract_files(
             tar,
@@ -98,7 +102,9 @@ def extract_zip(file_info):
 
     with zipfile.ZipFile(file_info["internal_filename"]) as zip:
         root_folder = _find_root_folder(
-            zip.infolist(), get_name=lambda info: info.filename, is_file=lambda info: not info.is_dir(),
+            zip.infolist(),
+            get_name=lambda info: info.filename,
+            is_file=lambda info: not info.is_dir(),
         )
 
         files = _extract_files(

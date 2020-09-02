@@ -446,7 +446,10 @@ async def _run_api(use_coverage):
             ]
         )
         python_proc = await asyncio.create_subprocess_exec(
-            command[0], *command[1:], stdout=asyncio.subprocess.PIPE, preexec_fn=set_death_signal,
+            command[0],
+            *command[1:],
+            stdout=asyncio.subprocess.PIPE,
+            preexec_fn=set_death_signal,
         )
         os.chdir(os.environ["PYTHONPATH"])
 

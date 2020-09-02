@@ -29,7 +29,9 @@ class Index(CommonDiskIndex):
         # Always make sure there is a commit in the working tree, otherwise
         # HEAD is invalid, which results in other nasty problems.
         self._git.index.commit(
-            "Add: initial empty commit", author=self._git_author, committer=self._git_author,
+            "Add: initial empty commit",
+            author=self._git_author,
+            committer=self._git_author,
         )
 
     def commit(self):
@@ -51,7 +53,9 @@ class Index(CommonDiskIndex):
         commit_message = f"Update: {change}"
 
         self._git.index.commit(
-            commit_message, author=self._git_author, committer=self._git_author,
+            commit_message,
+            author=self._git_author,
+            committer=self._git_author,
         )
 
 
