@@ -50,13 +50,34 @@ READERS = {
 }
 
 PACKAGE_TYPE_PAIRS = {
-    PackageType.BASE_GRAPHICS: {"secondary": PackageType.NEWGRF, "count_exact": 6,},
-    PackageType.BASE_MUSIC: {"secondary": PackageType.MUSIC_FILES, "count_min": 1,},
-    PackageType.BASE_SOUNDS: {"secondary": PackageType.SOUND_FILES, "count_exact": 1,},
-    PackageType.AI: {"secondary": PackageType.SCRIPT_MAIN_FILE, "count_exact": 1,},
-    PackageType.AI_LIBRARY: {"secondary": PackageType.SCRIPT_MAIN_FILE, "count_exact": 1,},
-    PackageType.GAME_SCRIPT: {"secondary": PackageType.SCRIPT_MAIN_FILE, "count_exact": 1,},
-    PackageType.GAME_SCRIPT_LIBRARY: {"secondary": PackageType.SCRIPT_MAIN_FILE, "count_exact": 1,},
+    PackageType.BASE_GRAPHICS: {
+        "secondary": PackageType.NEWGRF,
+        "count_exact": 6,
+    },
+    PackageType.BASE_MUSIC: {
+        "secondary": PackageType.MUSIC_FILES,
+        "count_min": 1,
+    },
+    PackageType.BASE_SOUNDS: {
+        "secondary": PackageType.SOUND_FILES,
+        "count_exact": 1,
+    },
+    PackageType.AI: {
+        "secondary": PackageType.SCRIPT_MAIN_FILE,
+        "count_exact": 1,
+    },
+    PackageType.AI_LIBRARY: {
+        "secondary": PackageType.SCRIPT_MAIN_FILE,
+        "count_exact": 1,
+    },
+    PackageType.GAME_SCRIPT: {
+        "secondary": PackageType.SCRIPT_MAIN_FILE,
+        "count_exact": 1,
+    },
+    PackageType.GAME_SCRIPT_LIBRARY: {
+        "secondary": PackageType.SCRIPT_MAIN_FILE,
+        "count_exact": 1,
+    },
     PackageType.HEIGHTMAP: {},
     PackageType.NEWGRF: {},
     PackageType.SCENARIO: {},

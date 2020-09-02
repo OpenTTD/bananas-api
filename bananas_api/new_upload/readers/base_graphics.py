@@ -14,7 +14,16 @@ class BaseGraphics(BaseSet):
             "palette": str,
             "blitter": str,
         },
-        "files": {"base": str, "logos": str, "arctic": str, "toyland": str, "tropical": str, "extra": str,},
+        "files": {
+            "base": str,
+            "logos": str,
+            "arctic": str,
+            "toyland": str,
+            "tropical": str,
+            "extra": str,
+        },
         "md5s": list,
-        "origin": {"default": str,},
+        "origin": {
+            "default": str,
+        },
     }

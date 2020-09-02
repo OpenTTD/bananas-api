@@ -37,7 +37,8 @@ async def reload(request):
 
 @click_additional_options
 @click.option(
-    "--reload-secret", help="Secret to allow an index reload. Always use this via an environment variable!",
+    "--reload-secret",
+    help="Secret to allow an index reload. Always use this via an environment variable!",
 )
 def click_reload_secret(reload_secret):
     global RELOAD_SECRET
