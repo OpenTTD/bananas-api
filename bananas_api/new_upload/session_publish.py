@@ -68,6 +68,21 @@ def _safe_name(name):
 
 def _create_tarball(session, filename, tar_path):
     with tarfile.open(filename, mode="w:gz", format=tarfile.USTAR_FORMAT) as tar:
+        # The OpenTTD client's tar extraction implementation demands a root
+        # folder at the start of a tar. It only extracts Base Music, so we are
+        # only adding it there. As we don't really have a root-folder, we have
+        # to make one virtually ourself.
+        if session["content_type"] == ContentType.BASE_MUSIC:
+            # We use the information of the first file, and convert the node into a
+            # directory after. This makes sure things like owner and mtime are set
+            # correctly on the folder.
+            root_folder = tar.gettarinfo(session["files"][0]["internal_filename"], arcname=tar_path)
+            root_folder.mode = 0o755
+            root_folder.type = tarfile.DIRTYPE
+            root_folder.size = 0
+
+            tar.addfile(root_folder)
+
         for file_info in sorted(session["files"], key=lambda x: x["filename"]):
             arcname = f"{tar_path}/{file_info['filename']}"
             tar.add(file_info["internal_filename"], arcname=arcname)
