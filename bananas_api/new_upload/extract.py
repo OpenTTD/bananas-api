@@ -3,6 +3,8 @@ import os
 import secrets
 import zipfile
 
+from .exceptions import ArchiveError
+
 TAR_STORAGE_PATH = "data/tar"
 
 
@@ -74,24 +76,25 @@ def extract_tarball(file_info):
     def set_tar_name(info, value):
         info.name = value
 
-    files = []
+    try:
+        with tarfile.open(file_info["internal_filename"]) as tar:
+            root_folder = _find_root_folder(
+                tar,
+                get_name=lambda info: info.name,
+                is_file=lambda info: info.isfile(),
+            )
 
-    with tarfile.open(file_info["internal_filename"]) as tar:
-        root_folder = _find_root_folder(
-            tar,
-            get_name=lambda info: info.name,
-            is_file=lambda info: info.isfile(),
-        )
-
-        files = _extract_files(
-            tar,
-            root_folder,
-            extractor=tar,
-            extractor_kwargs={"set_attrs": False},
-            get_name=lambda info: info.name,
-            set_name=set_tar_name,
-            is_file=lambda info: info.isfile(),
-        )
+            files = _extract_files(
+                tar,
+                root_folder,
+                extractor=tar,
+                extractor_kwargs={"set_attrs": False},
+                get_name=lambda info: info.name,
+                set_name=set_tar_name,
+                is_file=lambda info: info.isfile(),
+            )
+    except tarfile.ReadError:
+        raise ArchiveError
 
     return files
 
@@ -100,21 +103,24 @@ def extract_zip(file_info):
     def set_zip_name(info, value):
         info.filename = value
 
-    with zipfile.ZipFile(file_info["internal_filename"]) as zip:
-        root_folder = _find_root_folder(
-            zip.infolist(),
-            get_name=lambda info: info.filename,
-            is_file=lambda info: not info.is_dir(),
-        )
+    try:
+        with zipfile.ZipFile(file_info["internal_filename"]) as zip:
+            root_folder = _find_root_folder(
+                zip.infolist(),
+                get_name=lambda info: info.filename,
+                is_file=lambda info: not info.is_dir(),
+            )
 
-        files = _extract_files(
-            zip.infolist(),
-            root_folder,
-            extractor=zip,
-            extractor_kwargs={},
-            get_name=lambda info: info.filename,
-            set_name=set_zip_name,
-            is_file=lambda info: not info.is_dir(),
-        )
+            files = _extract_files(
+                zip.infolist(),
+                root_folder,
+                extractor=zip,
+                extractor_kwargs={},
+                get_name=lambda info: info.filename,
+                set_name=set_zip_name,
+                is_file=lambda info: not info.is_dir(),
+            )
+    except zipfile.BadZipFile:
+        raise ArchiveError
 
     return files

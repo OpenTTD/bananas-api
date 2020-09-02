@@ -34,6 +34,9 @@ from .readers.script import (
     Script,
 )
 
+TARBALL_EXTENSIONS = (".tar", ".tar.gz", ".tgz")
+ZIPFILE_EXTENSIONS = (".zip",)
+
 log = logging.getLogger(__name__)
 
 READERS = {
@@ -192,6 +195,12 @@ def validate_files(files):
     errors = False
     objects = []
     for file_info in files:
+        # Archives that still exist already have an error attached to them, so
+        # ignore further validation on them.
+        if file_info["filename"].endswith(TARBALL_EXTENSIONS + ZIPFILE_EXTENSIONS):
+            assert len(file_info["errors"]) == 1
+            continue
+
         file_info["errors"] = []
 
         with open(file_info["internal_filename"], "rb") as fp:
