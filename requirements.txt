@@ -14,7 +14,7 @@ idna==2.10
 jmespath==0.9.5
 marshmallow==3.5.1
 marshmallow-enum==1.5.1
-multidict==4.7.5
+multidict==4.7.6
 Pillow==7.1.1
 python-dateutil==2.8.1
 PyYAML==5.3.1
