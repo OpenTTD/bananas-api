@@ -80,6 +80,10 @@ def get_indexed_packages(content_type=None, user=None):
     if user:
         return local_storage.by_author[user.method].get(user.id, [])
 
+    # Either content_type or user should be set, so throw an exception if
+    # neither are. This is a programmers error.
+    raise NotImplementedError()
+
 
 def clear_indexed_packages():
     local_storage.clear()
