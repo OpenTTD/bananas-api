@@ -146,7 +146,7 @@ class EntryScript:
 
         # Make sure we keep the generator alive
         while True:
-            line = yield
+            _ = yield
 
     def _read_script_type(self):
         while True:
@@ -167,7 +167,7 @@ class EntryScript:
 
         # Make sure we keep the generator alive
         while True:
-            line = yield
+            _ = yield
 
 
 class Script:
