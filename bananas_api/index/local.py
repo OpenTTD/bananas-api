@@ -14,9 +14,8 @@ class Index(CommonDiskIndex):
         super().__init__(_folder)
 
         self._git_author = git.Actor(_username, _email)
-        self._prepare_git()
 
-    def _prepare_git(self):
+    def prepare(self):
         try:
             self._git = git.Repo(self.folder)
         except git.exc.NoSuchPathError:
