@@ -105,13 +105,13 @@ def _read_object(filename, fp):
     if lfilename.endswith(".txt"):
         if filename == "license.txt":
             _validate_textfile_encoding(fp)
-            return
+            return None
         elif txt_regexp.match(filename):
             _validate_textfile_encoding(fp)
-            return
+            return None
         elif filename.startswith("lang/"):
             _validate_textfile_encoding(fp)
-            return
+            return None
         else:
             raise UnknownFileException
     elif filename in ("info.nut", "library.nut"):
@@ -172,23 +172,25 @@ def _find_content_type(objects):
 def _find_package_type_dual(
     package_types, primary_package_type, secondary_package_type, count_exact=None, count_min=None
 ):
-    if primary_package_type in package_types:
-        if package_types[primary_package_type] > 1:
-            raise MultipleSameContentTypeException(primary_package_type)
+    if primary_package_type not in package_types:
+        return None
 
-        count = package_types[secondary_package_type]
+    if package_types[primary_package_type] > 1:
+        raise MultipleSameContentTypeException(primary_package_type)
 
-        if count_exact and count != count_exact:
-            raise CountExactContentTypeException(secondary_package_type, count, count_exact)
-        if count_min and count < count_min:
-            raise CountMinContentTypeException(secondary_package_type, count, count_min)
+    count = package_types[secondary_package_type]
 
-        if secondary_package_type == PackageType.SCRIPT_MAIN_FILE and PackageType.SCRIPT_FILES in package_types:
-            if len(package_types) != 3:
-                raise MultipleContentTypeException
-        elif len(package_types) != 2:
+    if count_exact and count != count_exact:
+        raise CountExactContentTypeException(secondary_package_type, count, count_exact)
+    if count_min and count < count_min:
+        raise CountMinContentTypeException(secondary_package_type, count, count_min)
+
+    if secondary_package_type == PackageType.SCRIPT_MAIN_FILE and PackageType.SCRIPT_FILES in package_types:
+        if len(package_types) != 3:
             raise MultipleContentTypeException
-        return primary_package_type
+    elif len(package_types) != 2:
+        raise MultipleContentTypeException
+    return primary_package_type
 
 
 def validate_files(files):

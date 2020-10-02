@@ -143,10 +143,10 @@ def invalidate_session_of_user(user):
 
 def get_session(user, token):
     if user.full_id not in _sessions:
-        return
+        return None
 
     if _sessions[user.full_id]["token"] != token:
-        return
+        return None
 
     session = _sessions[user.full_id]
     reset_session_timer(session)
@@ -156,7 +156,7 @@ def get_session(user, token):
 
 def get_session_by_token(token):
     if token not in _tokens:
-        return
+        return None
 
     user = _tokens[token]
     return get_session(user, token)
