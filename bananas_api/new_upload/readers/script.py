@@ -30,6 +30,7 @@ def decode_line(line, is_utf8):
         if latin1_line != utf8_line:
             raise Utf8FileWithoutBomException
     except UnicodeDecodeError:
+        # It failed to decode as UTF-8, so let's assume it is latin-1.
         pass
 
     return latin1_line
