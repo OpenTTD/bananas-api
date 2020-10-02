@@ -96,6 +96,7 @@ def click_content_save(index, commit_graceperiod, validate):
 
     TIMER_TIMEOUT = commit_graceperiod
     _index_instance = index()
+    _index_instance.prepare()
 
     _index_instance.load_all(validate=validate)
     if validate:

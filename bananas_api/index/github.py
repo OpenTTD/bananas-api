@@ -29,8 +29,8 @@ class Index(LocalIndex):
 
         super().__init__()
 
-    def _prepare_git(self):
-        super()._prepare_git()
+    def prepare(self):
+        super().prepare()
 
         # Make sure the origin is set correctly
         if "origin" not in self._git.remotes:
