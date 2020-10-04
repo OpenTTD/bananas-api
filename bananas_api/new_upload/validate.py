@@ -223,7 +223,7 @@ def validate_files(files):
     if errors:
         return None
 
-    # Detect the main pacakge
+    # Detect the main package
     content_type = _find_content_type(objects)
 
     # Validate for base-sets that the md5sums of the subfiles are the ones
