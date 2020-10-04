@@ -197,10 +197,12 @@ def validate_files(files):
     errors = False
     objects = []
     for file_info in files:
-        # Archives that still exist already have an error attached to them, so
-        # ignore further validation on them.
-        if file_info["filename"].endswith(TARBALL_EXTENSIONS + ZIPFILE_EXTENSIONS):
-            assert len(file_info["errors"]) == 1
+        # Archives that already have an error failed to extract; no need to do
+        # any further validation on them. Archives without an error is most
+        # likely a user uploading an archive in an archive. Show him an error
+        # that the archive extension is not supported. They should be able to
+        # figure it out from there.
+        if file_info["filename"].endswith(TARBALL_EXTENSIONS + ZIPFILE_EXTENSIONS) and len(file_info["errors"]) > 0:
             continue
 
         file_info["errors"] = []
