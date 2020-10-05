@@ -3,9 +3,9 @@ import secrets
 
 from aiohttp import web
 from aioauth_client import GithubClient
+from openttd_helpers import click_helper
 
 from .base import User as BaseUser
-from ..helpers.click import click_additional_options
 from ..helpers.web_routes import (
     in_query_github_code,
     in_query_github_state,
@@ -17,7 +17,7 @@ GITHUB_CLIENT_SECRET = None
 _github_states = {}
 
 
-@click_additional_options
+@click_helper.extend
 @click.option("--user-github-client-id", help="GitHub client ID. (user=github only)")
 @click.option(
     "--user-github-client-secret",

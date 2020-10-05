@@ -1,7 +1,7 @@
 import click
 import os
 
-from ..helpers.click import click_additional_options
+from openttd_helpers import click_helper
 
 _folder = None
 
@@ -18,7 +18,7 @@ class Storage:
         os.rename(filename, new_filename)
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--storage-local-folder",
     help="Folder to use for storage. (storage=local only)",

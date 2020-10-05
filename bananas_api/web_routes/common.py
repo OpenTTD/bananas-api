@@ -2,8 +2,8 @@ import click
 import logging
 
 from aiohttp import web
+from openttd_helpers import click_helper
 
-from ..helpers.click import click_additional_options
 from ..helpers.content_save import reload_index
 
 log = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ async def reload(request):
     return web.HTTPNoContent()
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--reload-secret",
     help="Secret to allow an index reload. Always use this via an environment variable!",

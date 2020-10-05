@@ -1,8 +1,9 @@
 import click
 import git
 
+from openttd_helpers import click_helper
+
 from .common_disk import Index as CommonDiskIndex
-from ..helpers.click import click_additional_options
 
 _folder = None
 _username = None
@@ -58,7 +59,7 @@ class Index(CommonDiskIndex):
         )
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--index-local-folder",
     help="Folder to use for index storage. (index=local only)",

@@ -8,6 +8,7 @@ from collections import (
     Counter,
     defaultdict,
 )
+from openttd_helpers import click_helper
 
 from .exceptions import (
     ArchiveError,
@@ -36,7 +37,6 @@ from .validate import (
     ZIPFILE_EXTENSIONS,
     validate_files,
 )
-from ..helpers.click import click_additional_options
 from ..helpers.content_storage import (
     get_indexed_package,
     is_on_blacklist,
@@ -93,7 +93,7 @@ def reset_session_timer(session, first_time=False):
     _timer[session["user"].full_id] = loop.create_task(_timer_handler(session))
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--cleanup-graceperiod",
     help="Graceperiod between cleanup of new uploads.",
