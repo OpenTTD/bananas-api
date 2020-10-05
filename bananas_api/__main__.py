@@ -7,10 +7,11 @@ import signal
 from aiohttp import web
 from aiohttp.web_log import AccessLogger
 from ctypes.util import find_library
+from openttd_helpers import click_helper
+from openttd_helpers.logging_helper import click_logging
+from openttd_helpers.sentry_helper import click_sentry
 
-from .helpers.click import click_additional_options
 from .helpers.content_save import click_content_save
-from .helpers.sentry import click_sentry
 from .helpers.user_session import (
     click_user_session,
     register_webroutes,
@@ -30,8 +31,6 @@ from .web_routes import (
 from .web_routes.user import click_client_file
 
 log = logging.getLogger(__name__)
-
-CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 
 class ErrorOnlyAccessLogger(AccessLogger):
@@ -75,14 +74,7 @@ async def _run_tusd(host, tusd_port, web_port, base_path, behind_proxy=False):
     await tusd_proc.wait()
 
 
-@click_additional_options
-def click_logging():
-    logging.basicConfig(
-        format="%(asctime)s %(levelname)-8s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO
-    )
-
-
-@click.command(context_settings=CONTEXT_SETTINGS)
+@click_helper.command()
 @click_logging  # Should always be on top, as it initializes the logging
 @click_sentry
 @click.option(

@@ -9,15 +9,12 @@ from datetime import (
     timezone,
 )
 from tempfile import NamedTemporaryFile
+from openttd_helpers import click_helper
 
 from ..helpers.api_schema import (
     Package,
     UploadStatus,
     VersionMinimized,
-)
-from ..helpers.click import (
-    click_additional_options,
-    import_module,
 )
 from ..helpers.content_save import store_on_disk
 from ..helpers.content_storage import (
@@ -203,13 +200,13 @@ def create_package(session):
     store_on_disk(session["user"], package)
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--storage",
     help="Storage backend to use.",
     type=click.Choice(["local", "s3"], case_sensitive=False),
     required=True,
-    callback=import_module("bananas_api.storage", "Storage"),
+    callback=click_helper.import_module("bananas_api.storage", "Storage"),
 )
 @click_storage_local
 @click_storage_s3

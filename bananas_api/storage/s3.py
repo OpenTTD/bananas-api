@@ -2,7 +2,7 @@ import boto3
 import click
 import os
 
-from ..helpers.click import click_additional_options
+from openttd_helpers import click_helper
 
 _bucket_name = None
 
@@ -23,7 +23,7 @@ class Storage:
         os.unlink(filename)
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--storage-s3-bucket",
     help="Name of the bucket to upload the files. (storage=s3 only)",

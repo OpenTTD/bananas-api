@@ -2,12 +2,12 @@ import click
 import yaml
 
 from aiohttp import web
+from openttd_helpers import click_helper
 
 from ..helpers.api_schema import (
     UserToken,
     UserProfile,
 )
-from ..helpers.click import click_additional_options
 from ..helpers.user_session import (
     create_user_with_method,
     get_user_by_code,
@@ -30,7 +30,7 @@ routes = web.RouteTableDef()
 _clients = {}
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--client-file", help="A YAML file that defines the valid client-ids.", type=click.Path(exists=True, dir_okay=False)
 )

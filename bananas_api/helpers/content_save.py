@@ -4,11 +4,7 @@ import logging
 import sys
 
 from collections import defaultdict
-
-from .click import (
-    click_additional_options,
-    import_module,
-)
+from openttd_helpers import click_helper
 
 from ..index.local import click_index_local
 from ..index.github import click_index_github
@@ -73,13 +69,13 @@ def queue_store_on_disk(user, package):
     _timer[user.full_id] = loop.create_task(_timer_handler(user))
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--index",
     help="Index backend to use.",
     type=click.Choice(["local", "github"], case_sensitive=False),
     required=True,
-    callback=import_module("bananas_api.index", "Index"),
+    callback=click_helper.import_module("bananas_api.index", "Index"),
 )
 @click_index_local
 @click_index_github

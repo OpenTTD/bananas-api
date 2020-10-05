@@ -2,10 +2,8 @@ import asyncio
 import click
 import secrets
 
-from .click import (
-    click_additional_options,
-    import_module,
-)
+from openttd_helpers import click_helper
+
 from ..new_upload.session import invalidate_session_of_user
 
 _sessions_by_bearer = {}
@@ -99,14 +97,14 @@ def get_login_expire():
     return LOGIN_EXPIRE
 
 
-@click_additional_options
+@click_helper.extend
 @click.option(
     "--user",
     help="User backend to use (can have multiple).",
     type=click.Choice(["developer", "github"], case_sensitive=False),
     required=True,
     multiple=True,
-    callback=import_module("bananas_api.user", "User"),
+    callback=click_helper.import_module("bananas_api.user", "User"),
 )
 @click.option(
     "--user-session-expire",
