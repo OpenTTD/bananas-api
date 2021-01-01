@@ -6,7 +6,7 @@ chardet==4.0.0
 click==7.1.2
 coloredlogs==15.0
 future==0.18.2
-humanfriendly==9.0
+humanfriendly==9.1
 idna==2.10
 multidict==5.0.2
 PyYAML==5.3.1
