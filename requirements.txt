@@ -1,4 +1,4 @@
-aioauth-client==0.24.1
+aioauth-client==0.25.3
 aiohttp==3.7.3
 async-timeout==3.0.1
 attrs==20.3.0
