@@ -78,7 +78,7 @@ class OrderedSchema(Schema):
 
 
 class ReplacedBy(OrderedSchema):
-    unique_id = fields.String(data_key="unique-id", validate=validate.Length(min=8, max=8))
+    unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
 
 
 class Global(OrderedSchema):
@@ -106,8 +106,8 @@ class Authors(OrderedSchema):
 
 class Dependency(OrderedSchema):
     content_type = EnumField(ContentType, data_key="content-type", by_value=True)
-    unique_id = fields.String(data_key="unique-id", validate=validate.Length(min=8, max=8))
-    md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(min=8, max=8))
+    unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
+    md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(equal=8))
 
     @validates_schema
     def validate_dependency(self, data, **kwargs):
@@ -164,7 +164,7 @@ class VersionMinimized(Global):
     version = fields.String(validate=ValidateBytesLength(max=15))
     license = EnumField(License, by_value=True)
     upload_date = fields.DateTime(data_key="upload-date", format="iso")
-    md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(min=8, max=8))
+    md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(equal=8))
     filesize = fields.Integer()
     availability = EnumField(Availability, by_value=True)
     dependencies = fields.List(fields.Nested(Dependency()))
@@ -175,7 +175,7 @@ class Package(Global):
     read_only = ["content_type", "unique_id", "archived", "replaced_by"]
 
     content_type = EnumField(ContentType, data_key="content-type", by_value=True)
-    unique_id = fields.String(data_key="unique-id", validate=validate.Length(min=8, max=8))
+    unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
     authors = fields.List(fields.Nested(Author))
     versions = fields.List(fields.Nested(VersionMinimized))
 
@@ -184,7 +184,7 @@ class Version(VersionMinimized):
     read_only = ["content_type", "unique_id"]
 
     content_type = EnumField(ContentType, data_key="content-type", by_value=True)
-    unique_id = fields.String(data_key="unique-id", validate=validate.Length(min=8, max=8))
+    unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
 
 
 class UploadStatusFiles(OrderedSchema):
