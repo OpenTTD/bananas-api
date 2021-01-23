@@ -144,6 +144,9 @@ def in_query_authorize_redirect_uri(redirect_uri):
 
 
 def in_query_authorize_code_challenge(code_challenge):
+    if code_challenge is None:
+        raise JSONException({"message": "code_challenge is not set in query-string"})
+
     if len(code_challenge) < 4:
         raise JSONException({"message": "code_challenge seems to be an invalid base64 sha256 value"})
 
