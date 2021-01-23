@@ -40,6 +40,9 @@ class User(BaseUser):
             key, _, value = key_value.partition("=")
             payload[key] = value
 
+        if "username" not in payload:
+            return web.HTTPBadRequest(reason="username not defined in payload")
+
         username = payload["username"]
         code = payload["code"]
 
