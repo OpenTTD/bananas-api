@@ -64,6 +64,14 @@ class ValidateURL(validate.URL):
         return super().__call__(value)
 
 
+class ValidateBytesLength(validate.Length):
+    def __call__(self, value):
+        return super().__call__(value.encode()).decode()
+
+    def _format_error(self, value, message):
+        return super()._format_error(value.decode(), message)
+
+
 class OrderedSchema(Schema):
     class Meta:
         ordered = True
@@ -77,12 +85,12 @@ class Global(OrderedSchema):
     read_only = ["archived", "replaced_by"]
 
     # Most of these limits are limitations in the OpenTTD client.
-    name = fields.String(validate=validate.Length(max=31))
+    name = fields.String(validate=ValidateBytesLength(max=31))
     archived = fields.Boolean()
     replaced_by = fields.Nested(ReplacedBy(), data_key="replaced-by", allow_none=True)
-    description = fields.String(validate=validate.Length(max=511))
+    description = fields.String(validate=ValidateBytesLength(max=511))
     url = fields.String(validate=ValidateURL())
-    tags = fields.List(fields.String(validate=validate.Length(max=31)))
+    tags = fields.List(fields.String(validate=ValidateBytesLength(max=31)))
 
 
 class Author(OrderedSchema):
@@ -153,7 +161,7 @@ class VersionMinimized(Global):
     read_only = ["upload_date", "md5sum_partial", "filesize", "license", "availability"]
     read_only_for_new = ["upload_date", "md5sum_partial", "filesize", "availability"]
 
-    version = fields.String(validate=validate.Length(max=15))
+    version = fields.String(validate=ValidateBytesLength(max=15))
     license = EnumField(License, by_value=True)
     upload_date = fields.DateTime(data_key="upload-date", format="iso")
     md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(min=8, max=8))
