@@ -82,10 +82,10 @@ async def oauth_token(request):
         return web.HTTPNotFound()
 
     if not user.validate(code_verifier):
-        return web.HTTPNotFound()
+        raise JSONException({"message": "Could not verify using the code verifier"})
 
     if user.redirect_uri != redirect_uri:
-        return web.HTTPNotFound()
+        raise JSONException({"message": "Invalid redirect_uri"})
 
     user_login = UserToken().dump({"access_token": user.bearer_token, "token_type": "Bearer"})
     return web.json_response(user_login)
