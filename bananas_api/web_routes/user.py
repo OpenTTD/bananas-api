@@ -52,6 +52,7 @@ async def login(request):
     client_id = request.query.get("client_id")
     redirect_uri = in_query_authorize_redirect_uri(request.query.get("redirect_uri"))
     code_challenge = in_query_authorize_code_challenge(request.query.get("code_challenge"))
+    request_host = request.headers.get("Host")
     in_query_authorize_code_challenge_method(request.query.get("code_challenge_method"))
 
     if client_id not in _clients:
@@ -60,7 +61,7 @@ async def login(request):
     if not redirect_uri.startswith(_clients[client_id]):
         raise JSONException({"message": "redirect_uri is invalid for this client_id"})
 
-    user = create_user_with_method(audience, redirect_uri, code_challenge)
+    user = create_user_with_method(audience, redirect_uri, code_challenge, request_host)
     return user.get_authorize_page()
 
 

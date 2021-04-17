@@ -13,17 +13,29 @@ class User(BaseUser):
     routes = web.RouteTableDef()
 
     def get_authorize_page(self):
+        # assume developer auth happens on http and not https. If it does happen to be on https,
+        #  the developer should be smart enough to know how to fix the returned url by themselves.
+        # While for a browser session, we could suffice with a relative url, because this url is shown in the
+        #  cli for copy-pasting, we need to include the host name as well.
+        authorize_url = f"http://{self.request_host}/user/developer?code={self.code}"
+
+        return web.HTTPFound(location=authorize_url)
+
+    @staticmethod
+    @routes.get("/user/developer")
+    def login_page(request):
+        code = request.query.get("code")
         return web.Response(
             body="<html><body>"
             "<h1>Developer login</h1>"
             "Username:"
             "<form method=POST action='/user/developer'>"
-            f"<input type='hidden' name='code' value='{self.code}'>"
+            f"<input type='hidden' name='code' value='{code}'>"
             "<input type='text' name='username'>"
             "<input type='submit' value='Login'>"
             "</form></body></html>",
             content_type="text/html",
-            headers={"Developer-Code": self.code},
+            headers={"Developer-Code": code},
         )
 
     def force_login(self, username):

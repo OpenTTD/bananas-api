@@ -16,8 +16,8 @@ SESSION_EXPIRE = None
 LOGIN_EXPIRE = None
 
 
-def create_user_with_method(method, redirect_uri, code_challenge):
-    user = _methods[method](redirect_uri, code_challenge)
+def create_user_with_method(method, redirect_uri, code_challenge, request_host):
+    user = _methods[method](redirect_uri, code_challenge, request_host)
     _sessions_by_code[user.code] = user
     return user
 
