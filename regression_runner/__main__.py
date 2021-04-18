@@ -108,6 +108,14 @@ async def handle_user_login(step):
         f"code_challenge={code_challenge}&"
         f"code_challenge_method=S256",
     )
+    if result.status != 302:
+        raise RegressionFailure(f"Was not redirected on login; status_code={result.status}")
+    # the redirect location is a full url, we should strip the hostname to have api_call swallow it
+    redirect_url = result.headers["location"]
+    if redirect_url.startswith("http://127.0.0.1:8080"):
+        redirect_url = redirect_url[21:]
+
+    result = await api_call("GET", redirect_url)
     if result.status != 200:
         raise RegressionFailure(f"Couldn't login; status_code={result.status}")
 
