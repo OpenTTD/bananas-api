@@ -15,10 +15,9 @@ from ..helpers.user_session import (
 class User:
     method = None  # type: str
 
-    def __init__(self, redirect_uri, code_challenge, request_host=""):
+    def __init__(self, redirect_uri, code_challenge):
         self.redirect_uri = redirect_uri
         self.code_challenge = code_challenge
-        self.request_host = request_host
 
         self.code = secrets.token_hex(16)
         self.login_expire = datetime.datetime.now() + datetime.timedelta(seconds=get_login_expire())

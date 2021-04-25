@@ -17,7 +17,7 @@ class User(BaseUser):
         #  the developer should be smart enough to know how to fix the returned url by themselves.
         # While for a browser session, we could suffice with a relative url, because this url is shown in the
         #  cli for copy-pasting, we need to include the host name as well.
-        authorize_url = f"http://{self.request_host}/user/developer?code={self.code}"
+        authorize_url = f"/user/developer?code={self.code}"
 
         return web.HTTPFound(location=authorize_url)
 
