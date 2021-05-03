@@ -13,10 +13,6 @@ class User(BaseUser):
     routes = web.RouteTableDef()
 
     def get_authorize_page(self):
-        # assume developer auth happens on http and not https. If it does happen to be on https,
-        #  the developer should be smart enough to know how to fix the returned url by themselves.
-        # While for a browser session, we could suffice with a relative url, because this url is shown in the
-        #  cli for copy-pasting, we need to include the host name as well.
         authorize_url = f"/user/developer?code={self.code}"
 
         return web.HTTPFound(location=authorize_url)
