@@ -108,6 +108,11 @@ async def handle_user_login(step):
         f"code_challenge={code_challenge}&"
         f"code_challenge_method=S256",
     )
+    if result.status != 302:
+        raise RegressionFailure(f"Was not redirected on login; status_code={result.status}")
+    redirect_url = result.headers["location"]
+
+    result = await api_call("GET", redirect_url)
     if result.status != 200:
         raise RegressionFailure(f"Couldn't login; status_code={result.status}")
 
