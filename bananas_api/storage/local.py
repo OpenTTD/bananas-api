@@ -1,5 +1,6 @@
 import click
 import os
+import shutil
 
 from openttd_helpers import click_helper
 
@@ -15,7 +16,7 @@ class Storage:
         new_filename = f"{folder}/{md5sum}.tar.gz"
 
         os.makedirs(folder, exist_ok=True)
-        os.rename(filename, new_filename)
+        shutil.move(filename, new_filename)
 
 
 @click_helper.extend
