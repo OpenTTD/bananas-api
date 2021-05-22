@@ -14,7 +14,7 @@ steps:
   - "tag1"
   - "tag2"
   compatibility:
-  - name: master
+  - name: official
     conditions:
     - ">= 1.0.0"
     - "< 1.10.0"
@@ -28,7 +28,7 @@ steps:
   - "tag1"
   - "tag2"
   compatibility:
-  - name: master
+  - name: official
     conditions:
     - ">= 1.0.0"
     - "< 1.10.0"
