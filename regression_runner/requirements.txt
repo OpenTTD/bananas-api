@@ -7,7 +7,7 @@ click==8.0.1
 coloredlogs==15.0
 future==0.18.2
 humanfriendly==9.1
-idna==2.10
+idna==3.2
 multidict==5.1.0
 PyYAML==5.4.1
 requests==2.25.1
