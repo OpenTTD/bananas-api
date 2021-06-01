@@ -11,7 +11,7 @@ idna==3.2
 multidict==5.1.0
 PyYAML==5.4.1
 requests==2.25.1
-six==1.15.0
+six==1.16.0
 tinydb==4.4.0
 tuspy==0.2.4
 urllib3==1.26.4
