@@ -45,11 +45,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Flake8 bananas_api
-      uses: TrueBrain/actions-flake8@master
+      uses: TrueBrain/actions-flake8@v2
       with:
         path: bananas_api
     - name: Flake8 regression_runner
-      uses: TrueBrain/actions-flake8@master
+      uses: TrueBrain/actions-flake8@v2
       with:
         path: regression_runner
 
