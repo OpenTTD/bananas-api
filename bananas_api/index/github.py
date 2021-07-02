@@ -11,6 +11,7 @@ from .local import Index as LocalIndex
 
 log = logging.getLogger(__name__)
 
+_github_branch = None
 _github_private_key = None
 _github_url = None
 
@@ -40,7 +41,7 @@ class Index(LocalIndex):
         if origin.url != _github_url:
             origin.set_url(_github_url)
 
-        self._fetch_latest()
+        self._fetch_latest(_github_branch)
 
     def _remove_empty_folders(self, parent_folder):
         removed = False
@@ -54,13 +55,13 @@ class Index(LocalIndex):
 
         return removed
 
-    def _fetch_latest(self):
+    def _fetch_latest(self, branch):
         log.info("Updating index to latest version from GitHub")
 
         origin = self._git.remotes.origin
 
-        # Checkout the latest master, removing and commits/file changes local
-        # might have.
+        # Checkout the latest default branch, removing and commits/file
+        # changes local might have.
         with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
             try:
                 origin.fetch()
@@ -68,7 +69,7 @@ class Index(LocalIndex):
                 # When the garbage collector kicks in, GitPython gets confused and
                 # throws a BadName. The best solution? Just run it again.
                 origin.fetch()
-        origin.refs.master.checkout(force=True, B="master")
+        origin.refs[branch].checkout(force=True, B=branch)
         for file_name in self._git.untracked_files:
             os.unlink(f"{self.folder}/{file_name}")
 
@@ -79,7 +80,7 @@ class Index(LocalIndex):
             pass
 
     def reload(self):
-        self._fetch_latest()
+        self._fetch_latest(_github_branch)
         super().reload()
 
     def push_changes(self):
@@ -102,14 +103,22 @@ class Index(LocalIndex):
     metavar="URL",
 )
 @click.option(
+    "--index-github-branch",
+    help="Branch of the GitHub repository to use.",
+    default="main",
+    show_default=True,
+    metavar="branch",
+)
+@click.option(
     "--index-github-private-key",
     help="Base64-encoded private key to access GitHub."
     "Always use this via an environment variable!"
     "(index=github only)",
 )
-def click_index_github(index_github_url, index_github_private_key):
-    global _github_url, _github_private_key
+def click_index_github(index_github_url, index_github_branch, index_github_private_key):
+    global _github_url, _github_branch, _github_private_key
 
     _github_url = index_github_url
+    _github_branch = index_github_branch
     if index_github_private_key:
         _github_private_key = base64.b64decode(index_github_private_key)
