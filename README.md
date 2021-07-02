@@ -1,10 +1,10 @@
 # BaNaNaS API
 
-[![GitHub License](https://img.shields.io/github/license/OpenTTD/bananas-api)](https://github.com/OpenTTD/bananas-api/blob/master/LICENSE)
+[![GitHub License](https://img.shields.io/github/license/OpenTTD/bananas-api)](https://github.com/OpenTTD/bananas-api/blob/main/LICENSE)
 [![GitHub Tag](https://img.shields.io/github/v/tag/OpenTTD/bananas-api?include_prereleases&label=stable)](https://github.com/OpenTTD/bananas-api/releases)
-[![GitHub commits since latest release](https://img.shields.io/github/commits-since/OpenTTD/bananas-api/latest/master)](https://github.com/OpenTTD/bananas-api/commits/master)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/OpenTTD/bananas-api/latest/main)](https://github.com/OpenTTD/bananas-api/commits/main)
 
-[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Testing/master?label=master)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3ATesting)
+[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Testing/main?label=main)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3ATesting)
 [![GitHub Workflow Status (Publish Image)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Publish%20image?label=publish)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3A%22Publish+image%22)
 [![GitHub Workflow Status (Deployments)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Deployment?label=deployment)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3A%22Deployment%22)
 
