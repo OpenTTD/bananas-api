@@ -7,12 +7,12 @@ click==8.0.1
 coloredlogs==15.0.1
 future==0.18.2
 humanfriendly==9.2
-idna==2.10
+idna==3.2
 multidict==5.1.0
 PyYAML==5.4.1
-requests==2.25.1
+requests==2.26.0
 six==1.16.0
-tinydb==4.5.0
+tinydb==4.5.1
 tuspy==0.2.5
 urllib3==1.26.6
 verboselogs==1.7
