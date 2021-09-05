@@ -48,6 +48,7 @@ class License(Enum):
 
 class Branch(Enum):
     VANILLA = "vanilla"
+    JGRPP = "jgrpp"
 
 
 class Availability(Enum):

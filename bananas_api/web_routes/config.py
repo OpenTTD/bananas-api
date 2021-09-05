@@ -18,6 +18,7 @@ routes = web.RouteTableDef()
 
 BRANCHES = {
     Branch.VANILLA: "Vanilla OpenTTD",
+    Branch.JGRPP: "JGRPP",
 }
 # Make sure all entries of Branch are in the dict above
 assert all(branch in BRANCHES for branch in Branch)
