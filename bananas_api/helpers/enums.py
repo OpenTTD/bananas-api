@@ -47,7 +47,7 @@ class License(Enum):
 
 
 class Branch(Enum):
-    OFFICIAL_OPENTTD = "official"
+    VANILLA = "vanilla"
 
 
 class Availability(Enum):
