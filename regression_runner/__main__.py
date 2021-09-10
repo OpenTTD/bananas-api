@@ -545,7 +545,10 @@ def main(regression_file, coverage):
     loop = asyncio.get_event_loop()
     loop.create_task(_run_api(coverage))
     failed = loop.run_until_complete(_handle_files(regression_file))
-    python_proc.terminate()
+    loop.run_until_complete(session.close())
+
+    if not python_proc.returncode:
+        python_proc.terminate()
 
     if failed:
         sys.exit(1)
