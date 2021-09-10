@@ -4,7 +4,7 @@ steps:
 - file-upload: valid.grf
 - api: new-package/update
   compatibility:
-  - name: official
+  - name: vanilla
     conditions:
     - "! 1.9.0"
   error:
