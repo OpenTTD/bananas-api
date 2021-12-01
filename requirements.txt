@@ -32,4 +32,4 @@ smmap==4.0.0
 sniffio==1.2.0
 typing-extensions==3.10.0.2
 urllib3==1.26.7
-yarl==1.6.3
+yarl==1.7.2
