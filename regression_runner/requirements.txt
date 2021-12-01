@@ -16,4 +16,4 @@ tinydb==4.5.2
 tuspy==0.2.5
 urllib3==1.26.7
 verboselogs==1.7
-yarl==1.6.3
+yarl==1.7.2
