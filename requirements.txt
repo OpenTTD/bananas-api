@@ -17,7 +17,7 @@ httpcore==0.14.3
 httpx==0.21.1
 idna==3.3
 jmespath==0.10.0
-marshmallow==3.13.0
+marshmallow==3.14.1
 marshmallow-enum==1.5.1
 multidict==5.2.0
 openttd-helpers==1.0.1
