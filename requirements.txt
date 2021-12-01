@@ -1,5 +1,5 @@
 aioauth-client==0.25.8
-aiohttp==3.7.4.post0
+aiohttp==3.8.1
 anyio==3.3.2
 async-timeout==3.0.1
 attrs==21.2.0
