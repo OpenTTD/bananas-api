@@ -15,7 +15,7 @@ GitPython==3.1.24
 h11==0.12.0
 httpcore==0.13.7
 httpx==0.19.0
-idna==3.2
+idna==3.3
 jmespath==0.10.0
 marshmallow==3.13.0
 marshmallow-enum==1.5.1
