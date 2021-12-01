@@ -9,7 +9,7 @@ future==0.18.2
 humanfriendly==10.0
 idna==3.3
 multidict==5.2.0
-PyYAML==5.4.1
+PyYAML==6.0
 requests==2.26.0
 six==1.16.0
 tinydb==4.5.2
