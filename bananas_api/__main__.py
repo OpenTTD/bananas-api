@@ -123,7 +123,7 @@ def main(bind, web_port, tusd_port, behind_proxy):
         loop.create_task(_run_tusd(host, tusd_port, web_port, "/new-package/tus/", behind_proxy))
 
     # Start aiohttp server
-    web.run_app(webapp, host=bind, port=web_port, access_log_class=ErrorOnlyAccessLogger)
+    web.run_app(webapp, host=bind, port=web_port, access_log_class=ErrorOnlyAccessLogger, loop=loop)
 
 
 if __name__ == "__main__":
