@@ -12,7 +12,7 @@ multidict==6.0.2
 PyYAML==6.0
 requests==2.27.1
 six==1.16.0
-tinydb==4.5.2
+tinydb==4.6.1
 tuspy==0.2.5
 urllib3==1.26.7
 verboselogs==1.7
