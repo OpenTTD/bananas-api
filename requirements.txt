@@ -18,7 +18,7 @@ h11==0.13.0
 httpcore==0.14.7
 httpx==0.22.0
 idna==3.3
-jmespath==0.10.0
+jmespath==1.0.0
 marshmallow==3.14.1
 marshmallow-enum==1.5.1
 multidict==6.0.2
