@@ -1,0 +1,15 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: scenario-12.scn
+- api: new-package/update
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+- api: new-package/info
+  name: "test"
+  version: "v1"
+  license: "GPL v2"
+  md5sum-partial: "17de6b62"
+  content-type: "scenario"
+- api: new-package/publish

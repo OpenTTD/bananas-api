@@ -119,7 +119,7 @@ class Scenario:
             type = reader.uint8()
             if (type & 0x0F) == 0x00:
                 size = type << 20 | reader.uint24(be=True)
-                self.read_item(tag, -1, reader.read(size))
+                self.read_item_without_header(tag, -1, reader.read(size))
             elif type == 1 or type == 2:
                 index = -1
                 while True:
@@ -131,7 +131,24 @@ class Scenario:
                         size -= index_size
                     else:
                         index += 1
-                    self.read_item(tag, index, reader.read(size))
+                    self.read_item_without_header(tag, index, reader.read(size))
+            elif type == 3 or type == 4:
+                size = reader.gamma()[0] - 1
+                fields = self.read_header(reader.read(size))
+
+                index = -1
+                while True:
+                    size = reader.gamma()[0] - 1
+                    if size < 0:
+                        break
+                    if type == 4:
+                        index, index_size = reader.gamma()
+                        size -= index_size
+                    else:
+                        index += 1
+                    self.read_item(tag, fields, index, reader.read(size))
+            else:
+                raise ValidationException("Invalid savegame.")
 
         try:
             reader.uint8()
@@ -142,7 +159,105 @@ class Scenario:
 
         self.md5sum = md5sum.digest()
 
-    def read_item(self, tag, index, data):
+    def read_header(self, data):
+        """
+        Read a new-style savegame header, which describes what fields are in
+        what order in the chunk.
+        """
+        reader = binreader.BinaryReader(io.BytesIO(data))
+
+        fields = []
+        while True:
+            field_type = reader.uint8()
+            if field_type == 0:
+                break
+
+            field_key = reader.gamma_str().decode()
+            fields.append((field_type, field_key))
+
+        return fields
+
+    def read_field(self, field_type, reader):
+        """
+        Read a single field from a record.
+        """
+        if field_type == 1:
+            value = reader.int8()
+        elif field_type == 2:
+            value = reader.uint8()
+        elif field_type == 3:
+            value = reader.int16(be=True)
+        elif field_type == 4:
+            value = reader.uint16(be=True)
+        elif field_type == 5:
+            value = reader.int32(be=True)
+        elif field_type == 6:
+            value = reader.uint32(be=True)
+        elif field_type == 7:
+            value = reader.int64(be=True)
+        elif field_type == 8:
+            value = reader.uint64(be=True)
+        elif field_type == 9:
+            value = reader.uint32(be=True)
+        else:
+            raise ValidationException("Invalid savegame.")
+
+        return value
+
+    def read_table(self, fields, reader):
+        """
+        Read a new-style savegame chunk, where the chunk started with a header.
+        """
+        table = {}
+        for field_type, field_key in fields:
+            is_list = field_type & 0x10
+            field_type = field_type & 0x0F
+
+            if field_type == 10:
+                value = reader.gamma_str().decode()
+            elif field_type == 11:
+                size, _ = reader.gamma()
+                value = reader.read(size)
+            elif is_list:
+                count, _ = reader.gamma()
+                value = [self.read_field(field_type, reader) for _ in range(count)]
+            else:
+                value = self.read_field(field_type, reader)
+
+            table[field_key] = value
+
+        return table
+
+    def read_item(self, tag, fields, index, data):
+        """
+        Read a new-style savegame chunk, where the chunk started with a header.
+        """
+        reader = binreader.BinaryReader(io.BytesIO(data))
+
+        # Only look at those chunks that have data we are interested in.
+        if tag not in (b"MAPS", b"NGRF", b"AIPL", b"GSDT"):
+            return
+
+        table = self.read_table(fields, reader)
+
+        if tag == b"MAPS":
+            self.map_size = (table["dim_x"], table["dim_y"])
+        elif tag == b"NGRF":
+            self.newgrf.append(
+                (table["ident.grfid"], bytes(table["ident.md5sum"]).hex(), table["version"], table["filename"])
+            )
+        elif tag == b"AIPL":
+            if table["is_random"] == 0 and table["name"]:
+                self.ai.append((None, None, table["version"], table["name"]))
+        elif tag == b"GSDT":
+            if table["is_random"] == 0 and table["name"]:
+                self.gs.append((None, None, table["version"], table["name"]))
+
+    def read_item_without_header(self, tag, index, data):
+        """
+        Read a old-style savegame chunk, where the chunk started without a header.
+        """
+
         reader = binreader.BinaryReader(io.BytesIO(data))
 
         if tag == b"MAPS":
