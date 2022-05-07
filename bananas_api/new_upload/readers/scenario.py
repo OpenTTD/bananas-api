@@ -119,7 +119,27 @@ class Scenario:
             type = reader.uint8()
             if (type & 0x0F) == 0x00:
                 size = type << 20 | reader.uint24(be=True)
-                self.read_item_without_header(tag, -1, reader.read(size))
+
+                if tag in (
+                    b"MAPT",
+                    b"MAPH",
+                    b"MAPO",
+                    b"MAP2",
+                    b"M3LO",
+                    b"M3HI",
+                    b"MAP5",
+                    b"MAPE",
+                    b"MAP7",
+                    b"MAP8",
+                ):
+                    # Make sure we read these large chunks in smaller parts.
+                    # That way, we don't waste a lot of (burst) memory for
+                    # something that we only do to calculate the md5sum.
+                    while size > 0:
+                        reader.skip(min(size, 8192))
+                        size -= min(size, 8192)
+                else:
+                    self.read_item_without_header(tag, -1, reader.read(size))
             elif type == 1 or type == 2:
                 index = -1
                 while True:
