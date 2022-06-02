@@ -24,7 +24,7 @@ marshmallow-enum==1.5.1
 multidict==6.0.2
 openttd-helpers==1.0.1
 packaging==21.3
-Pillow==9.0.1
+Pillow==9.1.1
 pyparsing==3.0.9
 python-dateutil==2.8.2
 PyYAML==6.0
