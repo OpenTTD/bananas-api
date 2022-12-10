@@ -144,6 +144,20 @@ class Compatability(OrderedSchema):
                     f"Condition can only mark the first client-version this version does or doesn't work for;"
                     f" expected '>= VERSION' or '< VERSION', got '{data[0]}'."
                 )
+
+            if data[0].startswith(">="):
+                condition = data[0][3:]
+            else:
+                condition = data[0][2:]
+
+            # Check if all parts of the version are integers
+            try:
+                [int(p) for p in condition.split(".")]
+            except ValueError:
+                raise ValidationError(
+                    f"Versions in a condition should be a stable release in the form of '12.0' or '1.8.0',"
+                    f" got '{condition}'."
+                )
         else:
             if not data[0].startswith(">= "):
                 raise ValidationError(
@@ -154,6 +168,24 @@ class Compatability(OrderedSchema):
                 raise ValidationError(
                     f"Second condition can only mark the first client-version this version doesn't work for;"
                     f" expected '< VERSION', got '{data[0]}'."
+                )
+
+            # Check if all parts of the version are integers
+            try:
+                [int(p) for p in data[0][3:].split(".")]
+            except ValueError:
+                raise ValidationError(
+                    f"Versions in a condition should be a stable release in the form of '12.0' or '1.8.0',"
+                    f" got '{data[0][3:]}'."
+                )
+
+            # Check if all parts of the version are integers
+            try:
+                [int(p) for p in data[1][2:].split(".")]
+            except ValueError:
+                raise ValidationError(
+                    f"Versions in a condition should be a stable release in the form of '12.0' or '1.8.0',"
+                    f" got '{data[1][2:]}'."
                 )
 
 
