@@ -1,0 +1,12 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/update
+  compatibility:
+  - name: vanilla
+    conditions:
+    - ">= 1.8.0"
+    - "< 1.9.0rc1"
+  error:
+    compatibility.conditions: "Versions in a condition should be a stable release in the form of '12.0' or '1.8.0', got '1.9.0rc1'."

@@ -10,6 +10,11 @@ steps:
   tags:
   - "tag1"
   - "tag2"
+  compatibility:
+  - name: vanilla
+    conditions:
+    - ">= 12.0"
+    - "< 13.0"
 - file-upload: valid2.grf
 - file-upload: readme.txt
 - file-upload: changelog.txt
@@ -22,6 +27,11 @@ steps:
   tags:
   - "tag1"
   - "tag2"
+  compatibility:
+  - name: vanilla
+    conditions:
+    - ">= 12.0"
+    - "< 13.0"
   md5sum-partial: "fc03854a"
   content-type: "newgrf"
   unique-id: "4e4d4c01"
