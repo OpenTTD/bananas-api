@@ -4,9 +4,9 @@
 [![GitHub Tag](https://img.shields.io/github/v/tag/OpenTTD/bananas-api?include_prereleases&label=stable)](https://github.com/OpenTTD/bananas-api/releases)
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/OpenTTD/bananas-api/latest/main)](https://github.com/OpenTTD/bananas-api/commits/main)
 
-[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Testing/main?label=main)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3ATesting)
-[![GitHub Workflow Status (Publish Image)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Publish%20image?label=publish)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3A%22Publish+image%22)
-[![GitHub Workflow Status (Deployments)](https://img.shields.io/github/workflow/status/OpenTTD/bananas-api/Deployment?label=deployment)](https://github.com/OpenTTD/bananas-api/actions?query=workflow%3A%22Deployment%22)
+[![GitHub Workflow Status (Testing)](https://img.shields.io/github/actions/workflow/status/OpenTTD/bananas-api/testing.yml?branch=main&label=main)](https://github.com/OpenTTD/bananas-api/actions/workflows/testing.yml)
+[![GitHub Workflow Status (Publish Image)](https://img.shields.io/github/actions/workflow/status/OpenTTD/bananas-api/publish.yml?label=publish)](https://github.com/OpenTTD/bananas-api/actions/workflows/publish.yml)
+[![GitHub Workflow Status (Deployments)](https://img.shields.io/github/actions/workflow/status/OpenTTD/bananas-api/deployment.yml?label=deployment)](https://github.com/OpenTTD/bananas-api/actions/workflows/deployment.yml)
 
 [![GitHub deployments (Staging)](https://img.shields.io/github/deployments/OpenTTD/bananas-api/staging?label=staging)](https://github.com/OpenTTD/bananas-api/deployments)
 [![GitHub deployments (Production)](https://img.shields.io/github/deployments/OpenTTD/bananas-api/production?label=production)](https://github.com/OpenTTD/bananas-api/deployments)
