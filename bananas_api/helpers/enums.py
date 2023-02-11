@@ -60,3 +60,37 @@ class Status(Enum):
     OK = "OK"
     WARNINGS = "Warnings"
     ERRORS = "Errors"
+
+
+class NewGRFSet(Enum):
+    AIRCRAFT = "aircraft"
+    AIRPORT = "airport"
+    BRIDGE = "bridge"
+    ECONOMY = "economy"
+    GUI = "gui"
+    INDUSTRY = "industry"
+    LANDSCAPE = "landscape"
+    MIXED = "mixed"
+    OBJECT = "object"
+    RAIL_INFRA = "rail-infra"
+    RAIL_STATION = "rail-station"
+    ROAD_INFRA = "road-infra"
+    ROAD_VEHICLE = "road-vehicle"
+    SHIP = "ship"
+    SIGNAL = "signal"
+    TOWN = "town"
+    TOWNNAME = "townname"
+    TRAIN = "train"
+    VEHICLE = "vehicle"
+    WATER_INFRA = "water-infra"
+    UNKNOWN = "unknown"
+
+
+class Palette(Enum):
+    BPP_32 = "32bpp"
+    BPP_8 = "8bpp"
+
+
+class Resolution(Enum):
+    HIGH = "high"
+    STANDARD = "standard"

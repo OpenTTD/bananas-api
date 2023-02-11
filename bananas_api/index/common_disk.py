@@ -77,37 +77,46 @@ class Index:
         self.files = []
         self.change = None
 
-    def _read_content_entry(self, content_type, folder_name, unique_id):
-        folder_name = f"{folder_name}/{unique_id}"
+    def read_content_version(self, path, version, load_as_object=False):
+        with open(f"{self.folder}/{path}/versions/{version}.yaml") as f:
+            version_data = yaml.safe_load(f.read())
 
-        with open(f"{folder_name}/global.yaml") as f:
+            # YAML converts this in a datetime() for us, and marshmallow
+            # expects a string. So output it as an ISO-8601 again.
+            version_data["upload-date"] = version_data["upload-date"].isoformat()
+
+            # Convert all the content-types to ContentType
+            for dep in version_data.get("dependencies", []):
+                dep_content_type = ContentType(dep["content-type"])
+                dep["content-type"] = dep_content_type.value
+
+        if load_as_object:
+            return VersionMinimized().load(version_data)
+        else:
+            return version_data
+
+    def _read_content_entry(self, content_type, category, unique_id):
+        path = f"{category}/{unique_id}"
+
+        with open(f"{self.folder}/{path}/global.yaml") as f:
             package_data = yaml.safe_load(f.read())
 
         if package_data.get("blacklisted"):
             return None
 
         package_data["authors"] = []
-        with open(f"{folder_name}/authors.yaml") as f:
+        with open(f"{self.folder}/{path}/authors.yaml") as f:
             authors_data = yaml.safe_load(f.read())
 
             for author_data in authors_data.get("authors", []):
                 package_data["authors"].append(author_data)
 
         package_data["versions"] = []
-        for version in os.listdir(f"{folder_name}/versions"):
-            with open(f"{folder_name}/versions/{version}") as f:
-                version_data = yaml.safe_load(f.read())
+        for version in os.listdir(f"{self.folder}/{path}/versions"):
+            version = version.rsplit(".", 1)[0]
 
-                # YAML converts this in a datetime() for us, and marshmallow
-                # expects a string. So output it as an ISO-8601 again.
-                version_data["upload-date"] = version_data["upload-date"].isoformat()
-
-                # Convert all the content-types to ContentType
-                for dep in version_data.get("dependencies", []):
-                    dep_content_type = ContentType(dep["content-type"])
-                    dep["content-type"] = dep_content_type.value
-
-                package_data["versions"].append(version_data)
+            package_version = self.read_content_version(path, version)
+            package_data["versions"].append(package_version)
 
         package_data["content-type"] = content_type.value
         package_data["unique-id"] = unique_id
@@ -139,13 +148,13 @@ class Index:
 
             for unique_id in os.listdir(folder_name):
                 try:
-                    package = self._read_content_entry(content_type, folder_name, unique_id)
+                    package = self._read_content_entry(content_type, content_type.value, unique_id)
                 except Exception:
                     # During validation, any error is enough to bail out
                     if validate:
                         raise
 
-                    log.exception(f"Failed to load entry {folder_name}/{unique_id}. Skipping.")
+                    log.exception(f"Failed to load entry {content_type.value}/{unique_id}. Skipping.")
                     continue
 
                 # Return of None means package is blacklisted
@@ -178,6 +187,27 @@ class Index:
             if errors:
                 raise Exception("Failed to load content entries: %r" % errors)
 
+    def store_version(self, path, version):
+        data = VersionMinimized().dump(version)
+        data["upload-date"] = date_string(data["upload-date"].replace("+00:00", "Z"))
+        upload_date = data["upload-date"].replace("-", "").replace(":", "")
+
+        # Make sure the overwrite fields are at the bottom; this just reads a
+        # bit easier.
+        data_overwrite = OrderedDict()
+        for field in Global().fields:
+            if field in data:
+                data_overwrite[field] = data[field]
+                del data[field]
+
+        with open(f"{self.folder}/{path}/versions/{upload_date}.yaml", "w") as fp:
+            fp.write(yaml_dump(data))
+            if data_overwrite:
+                fp.write("\n")
+                fp.write(yaml_dump(data_overwrite))
+
+        return f"{path}/versions/{upload_date}.yaml"
+
     def store_package(self, package, display_name):
         self.change = f"{package['content_type'].value}/{package['unique_id']} (by {display_name})"
 
@@ -196,23 +226,6 @@ class Index:
             fp.write(yaml_dump(data))
 
         for version in package["versions"]:
-            data = VersionMinimized().dump(version)
-            data["upload-date"] = date_string(data["upload-date"].replace("+00:00", "Z"))
-            upload_date = data["upload-date"].replace("-", "").replace(":", "")
-
-            # Make sure the overwrite fields are at the bottom; this just reads a
-            # bit easier.
-            data_overwrite = OrderedDict()
-            for field in Global().fields:
-                if field in data:
-                    data_overwrite[field] = data[field]
-                    del data[field]
-
-            self.files.append(f"{path}/versions/{upload_date}.yaml")
-            with open(f"{self.folder}/{path}/versions/{upload_date}.yaml", "w") as fp:
-                fp.write(yaml_dump(data))
-                if data_overwrite:
-                    fp.write("\n")
-                    fp.write(yaml_dump(data_overwrite))
+            self.files.append(self.store_version(path, version))
 
         self.commit()

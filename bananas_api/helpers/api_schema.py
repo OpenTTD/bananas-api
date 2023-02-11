@@ -15,6 +15,9 @@ from .enums import (
     Branch,
     ContentType,
     License,
+    NewGRFSet,
+    Palette,
+    Resolution,
     Status,
 )
 
@@ -189,14 +192,22 @@ class Compatability(OrderedSchema):
                 )
 
 
+class Classification(OrderedSchema):
+    set = EnumField(NewGRFSet, by_value=True)
+    palette = EnumField(Palette, by_value=True)
+    resolution = EnumField(Resolution, by_value=True)
+    has_sound_effects = fields.Boolean(data_key="has-sound-effects")
+
+
 class VersionMinimized(Global):
-    read_only = ["upload_date", "md5sum_partial", "filesize", "license", "availability"]
-    read_only_for_new = ["upload_date", "md5sum_partial", "filesize", "availability"]
+    read_only = ["upload_date", "md5sum_partial", "classification", "filesize", "license", "availability"]
+    read_only_for_new = ["upload_date", "md5sum_partial", "classification", "filesize", "availability"]
 
     version = fields.String(validate=ValidateBytesLength(max=15))
     license = EnumField(License, by_value=True)
     upload_date = fields.DateTime(data_key="upload-date", format="iso")
     md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(equal=8))
+    classification = fields.Nested(Classification())
     filesize = fields.Integer()
     availability = EnumField(Availability, by_value=True)
     dependencies = fields.List(fields.Nested(Dependency()))

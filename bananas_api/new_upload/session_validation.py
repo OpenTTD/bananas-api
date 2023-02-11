@@ -1,3 +1,4 @@
+from ..helpers.api_schema import Classification
 from ..helpers.enums import License
 
 
@@ -8,11 +9,20 @@ def validate_is_valid_package(session, data):
         session["md5sum"] = data["md5sum"]
         session["md5sum_partial"] = data["md5sum"][0:8]
         # upload-date and filesize are never set before "publish"
+
+        if "classification" in data:
+            session["classification"] = data["classification"]
+        elif "classification" in session:
+            del session["classification"]
+
     elif "content_type" in session:
         del session["content_type"]
         del session["unique_id"]
         del session["md5sum"]
         del session["md5sum_partial"]
+
+        if "classification" in session:
+            del session["classification"]
 
 
 def validate_license(session):
@@ -77,8 +87,6 @@ def validate_new_package(session):
         )
     if "url" not in session:
         session["warnings"].append("URL is not yet set for this package; although not mandatory, highly advisable.")
-    if "tags" not in session or not session["tags"]:
-        session["warnings"].append("Tags is not yet set for this package; although not mandatory, highly advisable.")
 
 
 def validate_packet_size(session, package):
@@ -94,8 +102,14 @@ def validate_packet_size(session, package):
     size += 16  # md5sum
     size += len(session.get("dependencies", [])) * 4
     size += 1
-    for tag in session.get("tags", package.get("tags", [])):
-        size += len(tag) + 2
+    for key, value in Classification().dump(session.get("classification")).items():
+        size += len(key) + 2
+        if type(value) == str:
+            size += len(value) + 2
+        elif type(value) == bool:
+            size += len("yes") + 2
+        else:
+            raise ValueError("Unknown type for classification value")
 
     if size > 1400:
-        session["errors"].append("Entry would exceed OpenTTD packet size; trim down on your tags.")
+        session["errors"].append("Entry would exceed OpenTTD packet size; trim down on your description.")
