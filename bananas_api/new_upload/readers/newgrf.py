@@ -1,6 +1,7 @@
 import enum
 import hashlib
 
+from collections import defaultdict
 from io import BytesIO
 
 from ...helpers.enums import PackageType
@@ -116,7 +117,86 @@ class Feature(enum.IntEnum):
     AIRPORT_TILES = 0x11
     ROADTYPES = 0x12
     TRAMTYPES = 0x13
-    TOWNNAMES = 0x101
+
+    # fake-features to track other things
+    TOWNNAMES = 0x100  # town name generators
+    BASECOSTS = 0x101  # base cost mulipliers
+    SNOWLINE = 0x102  # variable snow line
+
+    SPRITES = 0x200  # all sprites
+    SPRITES_32BPP = 0x201  # subset of SPRITES with 32bpp versions
+    SPRITES_ZOOMIN = 0x202  # subset of SPRITES with additional zoom-in versions
+
+    BASESET_GUI = 0x300
+    BASESET_FONT = 0x301
+    BASESET_COLOUR_SCHEMA = 0x302
+    BASESET_FACES = 0x303
+    BASESET_LANDSCAPE = 0x304
+    BASESET_TREES = 0x305
+    BASESET_COMPANY_PROPERTY = 0x306  # head quarter, statue
+    BASESET_BRIDGES = 0x307
+    BASESET_INFRA_RAIL = 0x308
+    BASESET_SIGNALS = 0x309
+    BASESET_INFRA_ROAD = 0x30A
+    BASESET_INFRA_WATER = 0x30B
+    BASESET_INFRA_AIR = 0x30C
+
+
+ACTION5_FEATURE = {
+    0x04: Feature.BASESET_SIGNALS,
+    0x05: Feature.BASESET_INFRA_RAIL,  # rail catenary
+    0x06: Feature.BASESET_LANDSCAPE,  # foundations
+    0x07: Feature.BASESET_GUI,  # TTDP gui
+    0x08: Feature.BASESET_INFRA_WATER,  # canals
+    0x09: Feature.BASESET_INFRA_ROAD,  # one-way roads
+    0x0A: Feature.BASESET_COLOUR_SCHEMA,  # 2CC
+    0x0B: Feature.BASESET_INFRA_ROAD,  # tram
+    0x0C: Feature.BASESET_TREES,  # snowy trees
+    0x0D: Feature.BASESET_LANDSCAPE,  # coast
+    0x0E: Feature.BASESET_SIGNALS,  # new signals
+    0x0F: Feature.BASESET_GUI,  # track highlights
+    0x10: Feature.BASESET_INFRA_AIR,  # airports
+    0x11: Feature.BASESET_INFRA_ROAD,  # road stops
+    0x12: Feature.BASESET_INFRA_WATER,  # aqueduct
+    0x13: Feature.BASESET_GUI,  # autorail highlights
+    0x14: Feature.BASESET_GUI,  # flags
+    0x15: Feature.BASESET_GUI,  # OTTD gui
+    0x16: Feature.BASESET_INFRA_AIR,  # airports
+    0x17: Feature.BASESET_INFRA_RAIL,  # rail tunnels
+}
+
+ACTIONA_FEATURE = dict()
+ACTIONA_RANGES = [
+    (0, 2, Feature.BASESET_GUI),  # cursors
+    (2, 674, Feature.BASESET_FONT),
+    (679, 774, Feature.BASESET_GUI),  # gui buttons, selection sprites
+    (775, 805, Feature.BASESET_COLOUR_SCHEMA),  # company and building colour remaps
+    (805, 990, Feature.BASESET_FACES),
+    (990, 1004, Feature.BASESET_LANDSCAPE),  # foundations
+    (1004, 1251, Feature.BASESET_INFRA_RAIL),  # rail infrastructure
+    (1301, 1309, Feature.BASESET_INFRA_RAIL),  # rail fences
+    (1313, 1420, Feature.BASESET_INFRA_ROAD),  # road infrastructure
+    (1420, 1421, Feature.BASESET_LANDSCAPE),  # concrete
+    (1576, 2010, Feature.BASESET_TREES),
+    (2365, 2429, Feature.BASESET_LANDSCAPE),  # tunnels
+    (2437, 2601, Feature.BASESET_BRIDGES),
+    (2601, 2603, Feature.BASESET_LANDSCAPE),  # objects
+    (2603, 2633, Feature.BASESET_COMPANY_PROPERTY),  # head quarters, statue
+    (2633, 2692, Feature.BASESET_INFRA_AIR),
+    (2692, 2724, Feature.BASESET_INFRA_ROAD),  # bus and truck station
+    (2727, 2733, Feature.BASESET_INFRA_WATER),  # water infrastructure
+    (3090, 3092, Feature.BASESET_GUI),  # gui buttons
+    (3924, 4070, Feature.BASESET_LANDSCAPE),  # ground, water, coast
+    (4070, 4077, Feature.BASESET_INFRA_WATER),  # water infrastructure
+    (4077, 4090, Feature.BASESET_GUI),  # gui buttons
+    (4090, 4297, Feature.BASESET_LANDSCAPE),  # farm fences and fields
+    (4324, 4404, Feature.BASESET_BRIDGES),
+    (4493, 4569, Feature.BASESET_LANDSCAPE),  # snow ground tiles
+    (4790, 4793, Feature.BASESET_GUI),  # gui buttons
+]
+for start, end, feat in ACTIONA_RANGES:
+    for sprite in range(start, end):
+        ACTIONA_FEATURE[sprite] = feat
 
 
 class NewGRF:
@@ -150,14 +230,8 @@ class NewGRF:
     @ivar container_version: GRF container version: 1, 2
     @ivar container_version: C{int}
 
-    @ivar has_32bpp: Whether 32bpp sprites are present.
-    @type has_32bpp: C{bool}
-
-    @ivar max_zoomin: Maximum zoom-in level: 1, 2, 4
-    @type max_zoomin: C{int}
-
-    @ivar features: Used NewGRF features
-    @type features: C{set} of C{Feature}
+    @ivar features: Used NewGRF features, and items-ids defined for them
+    @type features: C{dict} of C{Feature} to C{set} or C{int}
     """
 
     package_type = PackageType.NEWGRF
@@ -172,9 +246,7 @@ class NewGRF:
         self.description = None
         self.url = None
         self.container_version = None
-        self.has_32bpp = False
-        self.max_zoomin = 1
-        self.features = set()
+        self.features = defaultdict(set)
 
     def read(self, fp):
         """
@@ -201,24 +273,28 @@ class NewGRF:
             self.container_version = 1
 
         skip_sprites = 0
-        first_pseudo = True
+        sprite_index = 0
+        action6_effect = False
         while size != 0:
             info = reader.uint8()
             if info == 0xFF:
                 if skip_sprites > 0:
+                    action6_effect = False
                     reader.skip(size)
                     skip_sprites -= 1
                 else:
                     pseudo = reader.read(size)
-                    if not first_pseudo:
-                        skip_sprites = self.read_pseudo(pseudo)
+                    if sprite_index != 0:
+                        skip_sprites, action6_effect = self.read_pseudo(pseudo, action6_effect)
             else:
+                action6_effect = False
                 if skip_sprites > 0:
                     skip_sprites -= 1
 
                 if self.container_version == 2 and info == 0xFD:
                     reader.skip(size)
                 elif self.container_version == 1 and size >= 8:
+                    self.features[Feature.SPRITES].add(sprite_index)
                     reader.skip(7)
                     size -= 8
                     if (info & 0x02) != 0:
@@ -239,7 +315,7 @@ class NewGRF:
                 else:
                     raise ValidationException("Unknown info byte.")
 
-            first_pseudo = False
+            sprite_index += 1
             if self.container_version == 2:
                 size = reader.uint32()
             else:
@@ -266,12 +342,11 @@ class NewGRF:
                 zoom = reader.uint8()
 
                 if info != 0xFF:
+                    self.features[Feature.SPRITES].add(id)
                     if (info & 0x03) != 0:
-                        self.has_32bpp = True
-                    if zoom == 0x01:
-                        self.max_zoomin = 4
-                    elif zoom == 0x02 and self.max_zoomin < 2:
-                        self.max_zoomin = 2
+                        self.features[Feature.SPRITES_32BPP].add(id)
+                    if zoom in (0x01, 0x02):
+                        self.features[Feature.SPRITES_ZOOMIN].add(id)
 
                 reader.skip(size - 2)
                 id = reader.uint32()
@@ -285,24 +360,53 @@ class NewGRF:
 
         self.md5sum = md5sum.digest()
 
-    def read_pseudo(self, pseudo):
+    def read_pseudo(self, pseudo, action6_effect):
         """
         Read and parse pseudo sprite.
 
         @param pseudo: Pseudo sprite
         @type pseudo: C{bytes}
 
-        @return: Number of sprites to skip.
-        @rtype: C{int}
+        @param action6_effect: Is this action affected by an Action6
+        @type action6_effect: C{bool}
+
+        @return: Number of sprites to skip, and next Action6 effect
+        @rtype: C{int}, C{bool}
         """
 
         reader = binreader.BinaryReader(BytesIO(pseudo))
 
         action = reader.uint8()
-        if action == 0x00 or action == 0x03 or action == 0x04:
+        if action == 0x00:
             feat = reader.uint8()
-            if feat in Feature._value2member_map_:
-                self.features.add(Feature(feat))
+            num_props = reader.uint8()
+            num_ids = reader.uint8()
+            if num_ids:
+                first_id = reader.uint_ext()
+                if feat in Feature._value2member_map_:
+                    self.features[Feature(feat)].update(range(first_id, first_id + num_ids))
+                if feat == 0x08:
+                    for _ in range(num_props):
+                        prop = reader.uint8()
+                        if prop == 0x08:
+                            reader.skip(num_ids)
+                            self.features[Feature.BASECOSTS].update(range(first_id, first_id + num_ids))
+                        elif prop == 0x10:
+                            reader.skip(12 * 32 * num_ids)
+                            self.features[Feature.SNOWLINE].update(range(first_id, first_id + num_ids))
+                        elif prop in (0x15,):
+                            reader.skip(1 * num_ids)
+                        elif prop in (0x0A, 0x0C, 0x0F):
+                            reader.skip(2 * num_ids)
+                        elif prop in (0x09, 0x0B, 0x0D, 0x0E, 0x12, 0x16, 0x17):
+                            reader.skip(4 * num_ids)
+                        elif prop in (0x11,):
+                            reader.skip(8 * num_ids)
+                        elif prop in (0x13, 0x14):
+                            while reader.uint8() != 0:
+                                reader.str()
+                        else:
+                            break
         elif action == 0x01:
             reader.uint8()
             num_sets = reader.uint8()
@@ -314,10 +418,36 @@ class NewGRF:
                 reader.uint_ext()
                 num_sets = reader.uint_ext()
             num_ent = reader.uint_ext()
-            return num_sets * num_ent
+            return num_sets * num_ent, False
+        elif action == 0x03:
+            feat = reader.uint8()
+            num_ids = reader.uint8()
+            if num_ids and num_ids < 0x80 and feat in Feature._value2member_map_:
+                ids = []
+                for _ in range(num_ids):
+                    ids.append(reader.uint_ext())  # assuming extended-byte for all features; technically false :)
+                self.features[Feature(feat)].update(ids)
+        elif action == 0x04:
+            feat = reader.uint8()
+            lang_id = reader.uint8()
+            if feat in Feature._value2member_map_ and lang_id < 0x80:
+                num_ids = reader.uint8()
+                first_id = reader.uint_ext()  # assuming extended-byte for all features; technically false :)
+                self.features[Feature(feat)].update(range(first_id, first_id + num_ids))
         elif action == 0x05:
-            reader.uint8()
-            return reader.uint_ext()
+            id = reader.uint8()
+            skip_sprites = reader.uint_ext()
+            if id >= 0x80:
+                first_sprite = reader.uint_ext()
+                id -= 0x80
+            else:
+                first_sprite = 0
+            first_sprite += 0x10000 * (id + 1)  # assign fake-sprite id
+            if id in ACTION5_FEATURE:
+                self.features[ACTION5_FEATURE[id]].update(range(first_sprite, first_sprite + skip_sprites))
+            return skip_sprites, False
+        elif action == 0x06:
+            return 0, True
         elif action == 0x08:
             self.grf_version = reader.uint8()
             self.unique_id = reader.uint32().to_bytes(4, "little")
@@ -327,26 +457,36 @@ class NewGRF:
             num_sets = reader.uint8()
             skip_sprites = 0
             for _ in range(num_sets):
-                skip_sprites += reader.uint8()
-                reader.uint16()
-            return skip_sprites
+                num_ids = reader.uint8()
+                first_id = reader.uint16()
+                skip_sprites += num_ids
+                if not action6_effect:
+                    for id in range(first_id, first_id + num_ids):
+                        if id in ACTIONA_FEATURE:
+                            self.features[ACTIONA_FEATURE[id]].add(id)
+            return skip_sprites, False
         elif action == 0x0F:
-            self.features.add(Feature.TOWNNAMES)
+            id = reader.uint8()
+            if id >= 0x80:
+                self.features[Feature.TOWNNAMES].add(id - 0x80)
         elif action == 0x11:
-            self.features.add(Feature.SOUND_EFFECTS)
-            return reader.uint16()
+            num_sounds = reader.uint16()
+            self.features[Feature.SOUND_EFFECTS].update(range(num_sounds))
+            return num_sounds, False
         elif action == 0x12:
             num_defs = reader.uint8()
             skip_sprites = 0
             for _ in range(num_defs):
-                reader.uint8()
-                skip_sprites += reader.uint8()
-                reader.uint16()
-            return skip_sprites
+                font_id = reader.uint8()
+                num_ids = reader.uint8()
+                first_id = reader.uint16() + 0x10000 * (font_id + 0x100)  # assign fake-sprite id
+                self.features[Feature.BASESET_FONT].update(range(first_id, first_id + num_ids))
+                skip_sprites += num_ids
+            return skip_sprites, False
         elif action == 0x14:
             self.read_a14(reader, bytearray())
 
-        return 0
+        return 0, False
 
     def read_a14(self, reader, path):
         """
