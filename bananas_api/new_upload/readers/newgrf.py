@@ -120,6 +120,8 @@ class Feature(enum.IntEnum):
 
     # fake-features to track other things
     TOWNNAMES = 0x100  # town name generators
+    BASECOSTS = 0x101  # base cost mulipliers
+    SNOWLINE = 0x102  # variable snow line
 
     SPRITES = 0x200  # all sprites
     SPRITES_32BPP = 0x201  # subset of SPRITES with 32bpp versions
@@ -377,11 +379,34 @@ class NewGRF:
         action = reader.uint8()
         if action == 0x00:
             feat = reader.uint8()
-            reader.uint8()
+            num_props = reader.uint8()
             num_ids = reader.uint8()
-            if num_ids and feat in Feature._value2member_map_:
+            if num_ids:
                 first_id = reader.uint_ext()
-                self.features[Feature(feat)].update(range(first_id, first_id + num_ids))
+                if feat in Feature._value2member_map_:
+                    self.features[Feature(feat)].update(range(first_id, first_id + num_ids))
+                if feat == 0x08:
+                    for _ in range(num_props):
+                        prop = reader.uint8()
+                        if prop == 0x08:
+                            reader.skip(num_ids)
+                            self.features[Feature.BASECOSTS].update(range(first_id, first_id + num_ids))
+                        elif prop == 0x10:
+                            reader.skip(12 * 32 * num_ids)
+                            self.features[Feature.SNOWLINE].update(range(first_id, first_id + num_ids))
+                        elif prop in (0x15,):
+                            reader.skip(1 * num_ids)
+                        elif prop in (0x0A, 0x0C, 0x0F):
+                            reader.skip(2 * num_ids)
+                        elif prop in (0x09, 0x0B, 0x0D, 0x0E, 0x12, 0x16, 0x17):
+                            reader.skip(4 * num_ids)
+                        elif prop in (0x11,):
+                            reader.skip(8 * num_ids)
+                        elif prop in (0x13, 0x14):
+                            while reader.uint8() != 0:
+                                reader.str()
+                        else:
+                            break
         elif action == 0x01:
             reader.uint8()
             num_sets = reader.uint8()
