@@ -89,8 +89,3 @@ class NewGRFSet(Enum):
 class Palette(Enum):
     BPP_32 = "32bpp"
     BPP_8 = "8bpp"
-
-
-class Resolution(Enum):
-    HIGH = "high"
-    STANDARD = "standard"

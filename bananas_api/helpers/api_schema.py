@@ -17,7 +17,6 @@ from .enums import (
     License,
     NewGRFSet,
     Palette,
-    Resolution,
     Status,
 )
 
@@ -195,7 +194,7 @@ class Compatability(OrderedSchema):
 class Classification(OrderedSchema):
     set = EnumField(NewGRFSet, by_value=True)
     palette = EnumField(Palette, by_value=True)
-    resolution = EnumField(Resolution, by_value=True)
+    has_high_res = fields.Boolean(data_key="has-high-res")
     has_sound_effects = fields.Boolean(data_key="has-sound-effects")
 
 
