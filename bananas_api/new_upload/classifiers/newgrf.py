@@ -2,7 +2,6 @@ from ...helpers.api_schema import Classification
 from ...helpers.enums import (
     NewGRFSet,
     Palette,
-    Resolution,
 )
 from ..readers.newgrf import (
     Feature,
@@ -179,9 +178,9 @@ def classify_newgrf(newgrf: NewGRF) -> Classification:
 
     # If over 50% of the sprites are zoomed in, classify as high resolution.
     if len(features.get(Feature.SPRITES_ZOOMIN, [])) > len(features.get(Feature.SPRITES, [])) / 2:
-        classification["resolution"] = Resolution.HIGH
+        classification["has-high-res"] = True
     else:
-        classification["resolution"] = Resolution.STANDARD
+        classification["has-high-res"] = False
 
     # Features not used for further classification.
     for feature in (Feature.SOUND_EFFECTS, Feature.SPRITES, Feature.SPRITES_32BPP, Feature.SPRITES_ZOOMIN):
