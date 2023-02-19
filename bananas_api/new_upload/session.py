@@ -45,7 +45,7 @@ from ..helpers.enums import Status
 
 log = logging.getLogger(__name__)
 
-KEYS_ALLOWED_TO_UPDATE = {"version", "license", "dependencies", "compatibility", "name", "description", "url", "tags"}
+KEYS_ALLOWED_TO_UPDATE = {"version", "license", "dependencies", "compatibility", "name", "description", "url"}
 TIMER_TIMEOUT = 60 * 15
 
 _timer = defaultdict(lambda: None)

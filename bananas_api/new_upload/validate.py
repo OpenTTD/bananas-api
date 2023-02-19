@@ -7,6 +7,7 @@ from ..helpers.enums import (
     ContentType,
     PackageType,
 )
+from .classifiers.newgrf import classify_newgrf
 from .exceptions import (
     BaseSetDoesntMentionFileException,
     BaseSetMentionsFileThatIsNotThereException,
@@ -50,6 +51,10 @@ READERS = {
     "cat": Cat,
     "mid": Midi,
     "gm": Midi,
+}
+
+CLASSIFIERS = {
+    PackageType.NEWGRF: classify_newgrf,
 }
 
 PACKAGE_TYPE_PAIRS = {
@@ -218,6 +223,7 @@ def validate_files(files):
         if obj:
             file_info["package_type"] = obj.package_type
             obj.file_info = file_info
+            obj.classification = CLASSIFIERS.get(obj.package_type, lambda obj: None)(obj)
             objects.append(obj)
 
     if errors:
@@ -258,11 +264,12 @@ def validate_files(files):
     if errors:
         return None
 
-    # Collect md5sum and unique_id of this package
+    # Collect md5sum, unique_id, and classification of this package
     for obj in objects:
         if obj.package_type.name == content_type.name:
             md5sum = obj.md5sum
             unique_id = getattr(obj, "unique_id", None)
+            classification = obj.classification
 
             if unique_id and len(unique_id) != 4:
                 raise UniqueIdNotFourCharactersException
@@ -285,8 +292,13 @@ def validate_files(files):
     if unique_id:
         unique_id = unique_id.hex()
 
-    return {
+    result = {
         "content_type": content_type,
         "unique_id": unique_id,
         "md5sum": md5sum.hex(),
     }
+
+    if classification:
+        result["classification"] = classification
+
+    return result

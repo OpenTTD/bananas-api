@@ -154,6 +154,8 @@ def create_package(session):
     }
     for field in ("upload-date", "md5sum-partial", "filesize", "license", "version"):
         version_data[field] = raw_data[field]
+    if "classification" in raw_data:
+        version_data["classification"] = raw_data["classification"]
     for field in ("dependencies", "compatibility"):
         if field in raw_data:
             version_data[field] = raw_data[field]
@@ -168,7 +170,7 @@ def create_package(session):
             if version["availability"] == Availability.NEW_GAMES:
                 version["availability"] = Availability.SAVEGAMES_ONLY
 
-        for field in ("name", "description", "url", "tags"):
+        for field in ("name", "description", "url"):
             if field in raw_data:
                 version_data[field] = raw_data[field]
     else:
@@ -184,7 +186,7 @@ def create_package(session):
             "versions": [],
         }
 
-        for field in ("description", "url", "tags"):
+        for field in ("description", "url"):
             if field in raw_data:
                 package_data[field] = raw_data[field]
 
