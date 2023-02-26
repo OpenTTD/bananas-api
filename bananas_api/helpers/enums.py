@@ -90,3 +90,22 @@ class NewGRFSet(Enum):
 class Palette(Enum):
     BPP_32 = "32bpp"
     BPP_8 = "8bpp"
+
+
+class Resolution(Enum):
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+
+
+class Shape(Enum):
+    SQUARE = "square"
+    RECTANGLE = "rectangle"
+    NARROW = "narrow"
+
+
+class TerrainType(Enum):
+    VERY_FLAT = "very-flat"
+    FLAT = "flat"
+    HILLY = "hilly"
+    MOUNTAINOUS = "mountainous"

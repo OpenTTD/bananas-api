@@ -17,7 +17,10 @@ from .enums import (
     License,
     NewGRFSet,
     Palette,
+    Resolution,
+    Shape,
     Status,
+    TerrainType,
 )
 
 DEPENDENCY_CHECK = True
@@ -196,6 +199,9 @@ class Classification(OrderedSchema):
     palette = EnumField(Palette, by_value=True)
     has_high_res = fields.Boolean(data_key="has-high-res")
     has_sound_effects = fields.Boolean(data_key="has-sound-effects")
+    shape = EnumField(Shape, by_value=True)
+    resolution = EnumField(Resolution, by_value=True)
+    terrain_type = EnumField(TerrainType, by_value=True, data_key="terrain-type")
 
 
 class VersionMinimized(Global):

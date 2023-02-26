@@ -39,7 +39,7 @@ def update_progress(unique_id, version, md5sum_partial, name, error, message, cl
     default="local_storage",
     show_default=True,
 )
-@click.argument("category", type=click.Choice(["newgrf"]))
+@click.argument("category", type=click.Choice(["heightmap", "newgrf"]))
 @click.argument("unique_id", type=str, required=False)
 def main(index_local_folder, storage_local_folder, category, unique_id):
     global TOTAL_ENTRIES
