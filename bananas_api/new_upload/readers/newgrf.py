@@ -117,6 +117,7 @@ class Feature(enum.IntEnum):
     AIRPORT_TILES = 0x11
     ROADTYPES = 0x12
     TRAMTYPES = 0x13
+    ROAD_STOPS = 0x14
 
     # fake-features to track other things
     TOWNNAMES = 0x100  # town name generators
@@ -247,6 +248,10 @@ class NewGRF:
         self.url = None
         self.container_version = None
         self.features = defaultdict(set)
+
+        # Local variable to track mappings.
+        self._feature_mapping = {}
+        self._next_feature_map = None
 
     def read(self, fp):
         """
@@ -379,6 +384,8 @@ class NewGRF:
         action = reader.uint8()
         if action == 0x00:
             feat = reader.uint8()
+            feat = self._feature_mapping.get(feat, feat)
+
             num_props = reader.uint8()
             num_ids = reader.uint8()
             if num_ids:
@@ -421,6 +428,8 @@ class NewGRF:
             return num_sets * num_ent, False
         elif action == 0x03:
             feat = reader.uint8()
+            feat = self._feature_mapping.get(feat, feat)
+
             num_ids = reader.uint8()
             if num_ids and num_ids < 0x80 and feat in Feature._value2member_map_:
                 ids = []
@@ -429,6 +438,8 @@ class NewGRF:
                 self.features[Feature(feat)].update(ids)
         elif action == 0x04:
             feat = reader.uint8()
+            feat = self._feature_mapping.get(feat, feat)
+
             lang_id = reader.uint8()
             if feat in Feature._value2member_map_ and lang_id < 0x80:
                 num_ids = reader.uint8()
@@ -512,6 +523,12 @@ class NewGRF:
                 size = reader.uint16()
                 data = binreader.BinaryReader(BytesIO(reader.read(size)))
 
+                # JGRPP has a feature map, which uses the name of the feature
+                # to assign an ID to it.
+                if subpath == b"FIDMFTID" and self._next_feature_map:
+                    self._feature_mapping[data.uint8()] = self._next_feature_map
+                    self._next_feature_map = None
+
                 if subpath == b"INFOVRSN" and size >= 4:
                     self.version = data.uint32()
                 elif subpath == b"INFOMINV" and size >= 4:
@@ -520,6 +537,12 @@ class NewGRF:
             elif type_id == ord("T"):
                 grflangid = reader.uint8()
                 data = self.decodestr(reader.str())
+
+                # JGRPP has a feature map, which uses the name of the feature
+                # to assign an ID to it.
+                if subpath == b"FIDMNAME":
+                    if data == "road_stops":
+                        self._next_feature_map = Feature.ROAD_STOPS
 
                 # If the language is en_US (0x00), en_GB (0x01) or
                 # fallback (0x7F), read the name/description/url. This aint

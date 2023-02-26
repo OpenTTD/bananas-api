@@ -75,6 +75,7 @@ class NewGRFSet(Enum):
     RAIL_INFRA = "rail-infra"
     RAIL_STATION = "rail-station"
     ROAD_INFRA = "road-infra"
+    ROAD_STOP = "road-stop"
     ROAD_VEHICLE = "road-vehicle"
     SHIP = "ship"
     SIGNAL = "signal"
