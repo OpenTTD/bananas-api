@@ -22,6 +22,7 @@ from .enums import (
     Status,
     TerrainType,
 )
+from .regions import REGIONS
 
 DEPENDENCY_CHECK = True
 
@@ -77,6 +78,14 @@ class ValidateBytesLength(validate.Length):
         return super()._format_error(value.decode(), message)
 
 
+class ValidateRegion(validate.Validator):
+    def __call__(self, value):
+        if value not in REGIONS.keys():
+            raise ValidationError("Invalid region.")
+
+        return value
+
+
 class OrderedSchema(Schema):
     class Meta:
         ordered = True
@@ -96,6 +105,7 @@ class Global(OrderedSchema):
     description = fields.String(validate=ValidateBytesLength(max=511))
     url = fields.String(validate=ValidateURL())
     tags = fields.List(fields.String(validate=ValidateBytesLength(max=31)))
+    regions = fields.List(fields.String(validate=ValidateRegion()), validate=validate.Length(max=10))
 
 
 class Author(OrderedSchema):
@@ -276,3 +286,9 @@ class ConfigLicense(OrderedSchema):
 class ConfigBranch(OrderedSchema):
     name = fields.String()
     description = fields.String()
+
+
+class ConfigRegion(OrderedSchema):
+    code = fields.String()
+    name = fields.String()
+    parent = fields.String()

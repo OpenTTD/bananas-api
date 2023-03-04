@@ -71,3 +71,11 @@ This means that for clients, you need to contact two endpoints:
 In production the Load Balancer redirects the URLs to the right ports, but during development this is something to keep in mind.
 
 [bananas-frontend-cli](https://github.com/OpenTTD/bananas-frontend-cli) for example allows you to define the web-endpoint and the tusd-endpoint.
+
+## Regions
+
+To unify the way authors indicate what region their content is about, we have a built-in list of supported regions.
+This is a combination of the [UN M49](https://unstats.un.org/unsd/methodology/m49/overview) list and ISO 3166-1 / 3166-2 list.
+
+- The 3166-1 / 3166-2 list is easiest found in the Debian `iso-codes` package, after which it is located in `/usr/share/iso-codes/json/iso_3166-[12].json`.
+- The UN M49 can be found [here](https://unstats.un.org/unsd/methodology/m49/overview).

@@ -7,6 +7,9 @@ steps:
   license: "GPL v2"
   description: "My Description"
   url: "https://www.openttd.org/"
+  regions:
+  - "UN-150"
+  - "NL"
   compatibility:
   - name: vanilla
     conditions:
@@ -21,6 +24,9 @@ steps:
   license: "GPL v2"
   description: "My Description"
   url: "https://www.openttd.org/"
+  regions:
+  - "UN-150"
+  - "NL"
   compatibility:
   - name: vanilla
     conditions:

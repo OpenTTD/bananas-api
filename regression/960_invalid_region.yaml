@@ -1,0 +1,9 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/update
+  regions:
+  - "blabla"
+  error:
+    regions: "Invalid region."

@@ -3,12 +3,14 @@ from aiohttp import web
 from ..helpers.api_schema import (
     ConfigBranch,
     ConfigLicense,
+    ConfigRegion,
     ConfigUserAudience,
 )
 from ..helpers.enums import (
     Branch,
     License,
 )
+from ..helpers.regions import REGIONS
 from ..helpers.user_session import (
     get_user_method,
     get_user_methods,
@@ -71,3 +73,14 @@ async def config_branches(request):
     for branch, description in BRANCHES.items():
         branches.append(ConfigBranch().dump({"name": branch.value, "description": description}))
     return web.json_response(branches)
+
+
+@routes.get("/config/regions")
+async def config_regions(request):
+    regions = []
+    for code, region in sorted(REGIONS.items(), key=lambda x: x[0]):
+        data = {"code": code, "name": region["name"]}
+        if "parent" in region:
+            data["parent"] = region["parent"]
+        regions.append(ConfigRegion().dump(data))
+    return web.json_response(regions)

@@ -12,6 +12,8 @@ steps:
   name: "test"
   version: "v1"
   license: "Custom"
+  regions:
+  - "NL"
 - api: new-package/info
   name: "test"
   version: "v1"
@@ -19,4 +21,6 @@ steps:
   md5sum-partial: "b16a57bf"
   content-type: "base-sounds"
   unique-id: "4e554c4c"
+  regions:
+  - "NL"
 - api: new-package/publish
