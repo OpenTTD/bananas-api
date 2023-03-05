@@ -1,5 +1,6 @@
 from ..helpers.api_schema import Classification
 from ..helpers.enums import License
+from ..helpers.regions import REGIONS
 
 
 def validate_is_valid_package(session, data):
@@ -89,6 +90,12 @@ def validate_new_package(session):
         session["warnings"].append("URL is not yet set for this package; although not mandatory, highly advisable.")
 
 
+def get_region_codes(codes, region):
+    codes.add(region)
+    if REGIONS[region]["parent"]:
+        get_region_codes(codes, REGIONS[region]["parent"])
+
+
 def validate_packet_size(session, package):
     # Calculate if this entry wouldn't exceed the OpenTTD packet size if
     # we would transmit this over the wire.
@@ -110,6 +117,12 @@ def validate_packet_size(session, package):
             size += len("yes") + 2
         else:
             raise ValueError("Unknown type for classification value")
+
+    codes = set()
+    for region in session.get("regions", package.get("regions", [])):
+        get_region_codes(codes, region)
+    for code in codes:
+        size += len(REGIONS[code]["name"]) + 2
 
     if size > 1400:
         session["errors"].append("Entry would exceed OpenTTD packet size; trim down on your description.")

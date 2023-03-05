@@ -74,7 +74,7 @@ def reclassify_and_update_metadata(index_folder, storage_folder, category, uniqu
     Index(index_folder).store_version(f"{category}/{unique_id}", data)
 
     data["errors"] = []
-    validate_packet_size(data, {})
+    validate_packet_size(data, global_data)
     if data["errors"]:
         result["error"] = True
         result["message"] = "error while validating session: " + ", ".join(data["errors"])

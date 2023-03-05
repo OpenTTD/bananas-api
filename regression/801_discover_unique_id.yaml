@@ -8,6 +8,9 @@ steps:
     license: "GPL v2"
     description: "My Description"
     url: "https://www.openttd.org/"
+    regions:
+    - "NL"
+    - "UN-150"
     md5sum-partial: "fc03854a"
     content-type: "newgrf"
     unique-id: "4e4d4c01"

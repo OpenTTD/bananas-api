@@ -41,6 +41,9 @@ COPY requirements.txt \
         clients-development.yaml \
         clients-production.yaml \
         clients-staging.yaml \
+        region-un-m49.csv \
+        region-iso-3166-1.json \
+        region-iso-3166-2.json \
         /code/
 COPY licenses /code/licenses
 # Needed for Sentry to know what version we are running

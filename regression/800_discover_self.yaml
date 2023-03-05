@@ -7,6 +7,9 @@ steps:
     license: "GPL v2"
     description: "My Description"
     url: "https://www.openttd.org/"
+    regions:
+    - "NL"
+    - "UN-150"
     md5sum-partial: "c81c3d77"
     content-type: "newgrf"
     unique-id: "4e4d4c01"
@@ -16,7 +19,20 @@ steps:
     license: "GPL v2"
     description: "My Description"
     url: "https://www.openttd.org/"
+    regions:
+    - "NL"
+    - "UN-150"
     md5sum-partial: "fc03854a"
     content-type: "newgrf"
     unique-id: "4e4d4c01"
+    availability: "new-games"
+  - name: "test"
+    version: "v1"
+    license: "Custom"
+    description: null
+    url: null
+    regions: null
+    md5sum-partial: "b16a57bf"
+    content-type: "base-sounds"
+    unique-id: "4e554c4c"
     availability: "new-games"

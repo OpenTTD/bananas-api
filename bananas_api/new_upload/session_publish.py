@@ -35,6 +35,13 @@ from ..storage.s3 import click_storage_s3
 
 _storage_instance = None
 
+# Only for certain content-type it makes sense to have a region.
+CONTENT_TYPE_WITH_REGION = (
+    ContentType.NEWGRF,
+    ContentType.HEIGHTMAP,
+    ContentType.SCENARIO,
+)
+
 
 def _tar_add_file_from_string(tar, arcname, content):
     content = content.encode()
@@ -173,6 +180,9 @@ def create_package(session):
         for field in ("name", "description", "url"):
             if field in raw_data:
                 version_data[field] = raw_data[field]
+
+        if "regions" in raw_data and session["content_type"] in CONTENT_TYPE_WITH_REGION:
+            version_data["regions"] = sorted(raw_data["regions"])
     else:
         # This is a new package, so construct it from the ground up. Run it
         # through the validator, just to make sure we are adding valid
@@ -189,6 +199,9 @@ def create_package(session):
         for field in ("description", "url"):
             if field in raw_data:
                 package_data[field] = raw_data[field]
+
+        if "regions" in raw_data and session["content_type"] in CONTENT_TYPE_WITH_REGION:
+            package_data["regions"] = sorted(raw_data["regions"])
 
         package = Package().load(package_data)
 

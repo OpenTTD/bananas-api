@@ -1,0 +1,19 @@
+steps:
+- api: user/login
+- api: new-package/start
+- file-upload: valid.grf
+- api: new-package/update
+  regions:
+  - "GB"
+  - "NL"
+  - "DE"
+  - "FR"
+  - "ES"
+  - "IE"
+  - "BE"
+  - "LU"
+  - "DK"
+  - "NO"
+  - "SE"
+  error:
+    regions: "Longer than maximum length 10."

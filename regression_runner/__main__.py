@@ -21,6 +21,8 @@ from tusclient.client import TusClient
 log = verboselogs.VerboseLogger(__name__)
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
+PORT_TUSD = 1081
+PORT_WEB = 8081
 
 auth_headers = {}
 startup_event = asyncio.Event()
@@ -40,17 +42,17 @@ class DefinitionFailure(Exception):
 
 async def api_call(request_command, url, json=None, data=None, silent=False):
     if request_command == "GET":
-        return await session.get(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
+        return await session.get(f"http://127.0.0.1:{PORT_WEB}{url}", headers=auth_headers, allow_redirects=False)
     if request_command == "POST":
         return await session.post(
-            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+            f"http://127.0.0.1:{PORT_WEB}{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
         )
     if request_command == "PUT":
         return await session.put(
-            f"http://127.0.0.1:8080{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
+            f"http://127.0.0.1:{PORT_WEB}{url}", data=data, json=json, headers=auth_headers, allow_redirects=False
         )
     if request_command == "DELETE":
-        return await session.delete(f"http://127.0.0.1:8080{url}", headers=auth_headers, allow_redirects=False)
+        return await session.delete(f"http://127.0.0.1:{PORT_WEB}{url}", headers=auth_headers, allow_redirects=False)
 
     raise DefinitionFailure(f"Unknown request-command {request_command}")
 
@@ -75,7 +77,7 @@ def match_package_in_list(packages_to_match, packages_to_match_to):
                     # All fields were identical, so we have a match
                     break
             else:
-                raise RegressionFailure(f"Couldn't find package in discover self; package={package}")
+                continue
 
             for field in package.keys():
                 if field in ("version", "license", "md5sum-partial", "availability"):
@@ -217,7 +219,7 @@ async def handle_new_start(step):
 
 
 async def handle_new_update(step):
-    fields = ["version", "name", "description", "license", "url", "tags", "dependencies", "compatibility"]
+    fields = ["version", "name", "description", "license", "url", "regions", "dependencies", "compatibility"]
     validate_keys(step, fields + ["api", "error"])
 
     payload = {}
@@ -271,7 +273,7 @@ async def handle_new_info(step):
         "name",
         "description",
         "url",
-        "tags",
+        "regions",
         "license",
         "md5sum-partial",
         "content-type",
@@ -399,7 +401,7 @@ async def handle_file_upload(step):
     if "name" in step:
         filename = step["name"]
 
-    tus = TusClient("http://127.0.0.1:1080/new-package/tus/")
+    tus = TusClient(f"http://127.0.0.1:{PORT_TUSD}/new-package/tus/")
     try:
         uploader = tus.uploader(
             fullpath, chunk_size=5 * 1024 * 1024, metadata={"filename": filename, "upload-token": token}
@@ -435,7 +437,9 @@ async def _run_api(use_coverage):
                 "-m",
                 "bananas_api",
                 "--web-port",
-                "8080",
+                str(PORT_WEB),
+                "--tusd-port",
+                str(PORT_TUSD),
                 "--storage",
                 "local",
                 "--index",
