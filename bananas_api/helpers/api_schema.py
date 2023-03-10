@@ -13,12 +13,14 @@ from .content_storage import get_indexed_package
 from .enums import (
     Availability,
     Branch,
+    Climate,
     ContentType,
     License,
     NewGRFSet,
     Palette,
     Resolution,
     Shape,
+    Size,
     Status,
     TerrainType,
 )
@@ -212,6 +214,8 @@ class Classification(OrderedSchema):
     shape = EnumField(Shape, by_value=True)
     resolution = EnumField(Resolution, by_value=True)
     terrain_type = EnumField(TerrainType, by_value=True, data_key="terrain-type")
+    size = EnumField(Size, by_value=True)
+    climate = EnumField(Climate, by_value=True)
 
 
 class VersionMinimized(Global):

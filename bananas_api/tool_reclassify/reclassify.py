@@ -3,17 +3,20 @@ import yaml
 
 from .heightmap import load_heightmap
 from .newgrf import load_newgrf
+from .scenario import load_scenario
 
 from ..helpers.enums import Availability
 from ..index.common_disk import Index
 from ..new_upload.classifiers.heightmap import classify_heightmap
 from ..new_upload.classifiers.newgrf import classify_newgrf
+from ..new_upload.classifiers.scenario import classify_scenario
 from ..new_upload.session_validation import validate_packet_size
 
 
 CLASSIFICATION_TO_FUNCTION = {
     "heightmap": (load_heightmap, classify_heightmap),
     "newgrf": (load_newgrf, classify_newgrf),
+    "scenario": (load_scenario, classify_scenario),
 }
 
 
