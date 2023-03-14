@@ -9,6 +9,7 @@ from ..helpers.enums import (
 )
 from .classifiers.heightmap import classify_heightmap
 from .classifiers.newgrf import classify_newgrf
+from .classifiers.scenario import classify_scenario
 from .exceptions import (
     BaseSetDoesntMentionFileException,
     BaseSetMentionsFileThatIsNotThereException,
@@ -57,6 +58,7 @@ READERS = {
 CLASSIFIERS = {
     PackageType.HEIGHTMAP: classify_heightmap,
     PackageType.NEWGRF: classify_newgrf,
+    PackageType.SCENARIO: classify_scenario,
 }
 
 PACKAGE_TYPE_PAIRS = {

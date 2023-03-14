@@ -1,3 +1,4 @@
+import enum
 import hashlib
 import io
 import lzma
@@ -6,6 +7,14 @@ import zlib
 from ...helpers.enums import PackageType
 from ..exceptions import ValidationException
 from .helpers import binreader
+
+
+@enum.unique
+class Landscape(enum.IntEnum):
+    TEMPERATE = 0
+    ARCTIC = 1
+    TROPIC = 2
+    TOYLAND = 3
 
 
 class PlainFile:
@@ -67,6 +76,9 @@ class Scenario:
     @ivar map_size: Map size
     @type map_size: (C{int}, c{int})
 
+    @ivar histogram: List of 256 entries indicating how often that height level occurs
+    @type histogram: C{list} of C{int}
+
     @ivar newgrf: List of NewGRF as (grf-id, md5sum, version, filename)
     @type newgrf: C{list} of (C{int}, C{str}, C{int}, C{str})
 
@@ -75,6 +87,9 @@ class Scenario:
 
     @ivar gs: List of game scripts as (short-id, md5sum, version, name)
     @type gs: C{list} of (C{None}, C{None}, C{int}, C{str})
+
+    @ivar landscape: Landscape type
+    @type landscape: C{int}
     """
 
     package_type = PackageType.SCENARIO
@@ -82,10 +97,19 @@ class Scenario:
     def __init__(self):
         self.md5sum = None
         self.savegame_version = None
+        self.is_patchpack = None
         self.map_size = (None, None)
+        self.histogram = None
         self.newgrf = []
         self.ai = []
         self.gs = []
+        self.landscape = None
+
+        # In old savegames, heightmap was in MAPT. In newer in MAPH.
+        # So we assume MAPH, but if that means histogram remains empty,
+        # we use MAPT. That way, the new purpose of those bits in MAPT
+        # aren't influencing the histogram.
+        self._histogram_old = None
 
     def read(self, fp):
         """
@@ -99,7 +123,9 @@ class Scenario:
         reader = binreader.BinaryReader(fp, md5sum)
 
         compression = reader.read(4)
-        self.savegame_version = reader.uint16(be=True)
+        savegame_version = reader.uint16(be=True)
+        self.savegame_version = savegame_version & 0xFFF
+        self.is_patchpack = savegame_version & 0x8000 != 0
         reader.uint16()
 
         decompressor = UNCOMPRESS.get(compression)
@@ -117,12 +143,66 @@ class Scenario:
                 raise ValidationException("Invalid savegame.")
 
             type = reader.uint8()
+
+            # JGRPP's extended header
+            if (type & 0x0F) == 0x0F:
+                ext_flags = reader.uint32(be=True)
+                type = reader.uint8()
+            else:
+                ext_flags = 0
+
             if (type & 0x0F) == 0x00:
                 size = type << 20 | reader.uint24(be=True)
 
+                # JGRPP's big RIFF flag
+                if ext_flags & 0x01:
+                    size += reader.uint32(be=True) << 28
+
+                # New savegame format, with the height of the tile in MAPH.
+                if tag == b"MAPH":
+                    self.histogram = [0] * 256
+                    while size > 0:
+                        data = reader.read(min(size, 8192))
+                        for h in data:
+                            self.histogram[h] += 1
+                        size -= min(size, 8192)
+
+                # Old savegame format, with the height of the tile in MAPT.
+                if tag == b"MAPT":
+                    self._histogram_old = [0] * 256
+                    while size > 0:
+                        data = reader.read(min(size, 8192))
+                        for h in data:
+                            self._histogram_old[h & 0xF] += 1
+                        size -= min(size, 8192)
+
+                # JGRPP-based map chunk containing the height of the tile.
+                if tag == b"WMAP":
+                    self.histogram = [0] * 256
+
+                    # First chunk is 8 bytes per tile for the whole map.
+                    chunk_map_size = self.map_size[0] * self.map_size[1] * 8
+                    if chunk_map_size > size:
+                        raise ValidationException("Invalid savegame.")
+
+                    # Read this first chunk.
+                    while chunk_map_size > 0:
+                        data = reader.read(min(chunk_map_size, 8192))
+
+                        for i in range(0, len(data), 8):
+                            # Height is the second byte in the tile.
+                            h = data[i + 1]
+                            self.histogram[h] += 1
+
+                        chunk_map_size -= min(chunk_map_size, 8192)
+                        size -= min(size, 8192)
+
+                    # There can be other tile-data after the first chunk; skip this.
+                    while size > 0:
+                        reader.skip(min(size, 8192))
+                        size -= min(size, 8192)
+
                 if tag in (
-                    b"MAPT",
-                    b"MAPH",
                     b"MAPO",
                     b"MAP2",
                     b"M3LO",
@@ -171,11 +251,39 @@ class Scenario:
                 raise ValidationException("Invalid savegame.")
 
         try:
-            reader.uint8()
+            v = reader.uint8()
         except ValidationException:
             pass
         else:
-            raise ValidationException("Junk at the end of file.")
+            # Savegames before r20090 could contain a junk-block of 128 KiB of all zeros.
+            if v == 0:
+                for _ in range(128 * 1024 - 1):
+                    try:
+                        v = reader.uint8()
+                    except ValidationException:
+                        # In case it is not a block of 128 KiB, it is junk.
+                        raise ValidationException("Junk at the end of file.")
+
+                    # In case it is not a zero, it is junk.
+                    if v != 0:
+                        raise ValidationException("Junk at the end of file.")
+            else:
+                raise ValidationException("Junk at the end of file.")
+
+        # Savegames before version 6 had no MAPS chunk, and are always 256x256.
+        if self.savegame_version < 6:
+            self.map_size = (256, 256)
+
+        if self.map_size[0] is None:
+            raise ValidationException("Scenario is missing essential chunks (MAPS).")
+        if self.histogram is None:
+            if self._histogram_old is None:
+                raise ValidationException("Scenario is missing essential chunks (MAPT / MAPH).")
+            else:
+                self.histogram = self._histogram_old
+
+        if self.map_size[0] * self.map_size[1] == self.histogram[0]:
+            raise ValidationException("Map is completely empty.")
 
         self.md5sum = md5sum.digest()
 
@@ -255,7 +363,7 @@ class Scenario:
         reader = binreader.BinaryReader(io.BytesIO(data))
 
         # Only look at those chunks that have data we are interested in.
-        if tag not in (b"MAPS", b"NGRF", b"AIPL", b"GSDT"):
+        if tag not in (b"MAPS", b"NGRF", b"AIPL", b"GSDT", b"PATS"):
             return
 
         table = self.read_table(fields, reader)
@@ -272,6 +380,8 @@ class Scenario:
         elif tag == b"GSDT":
             if table["is_random"] == 0 and table["name"]:
                 self.gs.append((None, None, table["version"], table["name"]))
+        elif tag == b"PATS":
+            self.landscape = table["game_creation.landscape"]
 
     def read_item_without_header(self, tag, index, data):
         """
@@ -310,3 +420,35 @@ class Scenario:
             is_random = reader.uint8() != 0
             if not is_random and len(name) > 0:
                 self.gs.append((None, None, version, name))
+        elif tag == b"PATS":
+            # Before version 97, landscape was part not part of OPTS.
+            if self.savegame_version < 97:
+                return
+
+            # Various of difficulty-related settings.
+            reader.skip(19)
+
+            # Subsidy-duration setting.
+            if self.savegame_version >= 292:
+                reader.skip(2)
+
+            # Difficulty-level setting.
+            if self.savegame_version < 178:
+                reader.skip(1)
+
+            # Competitor-start-time and competitor-speed settings.
+            if self.savegame_version >= 97 and self.savegame_version < 110:
+                reader.skip(2)
+
+            reader.skip(1)  # town-name setting.
+            self.landscape = Landscape(reader.uint8())
+        elif tag == b"OPTS":
+            if self.savegame_version < 4:
+                reader.skip(17 * 2)  # Difficulty-custom settings.
+            else:
+                reader.skip(18 * 2)
+            reader.skip(1)  # Difficulty-level setting.
+            reader.skip(1)  # Currency setting.
+            reader.skip(1)  # Units setting.
+            reader.skip(1)  # Town-name setting.
+            self.landscape = Landscape(reader.uint8())

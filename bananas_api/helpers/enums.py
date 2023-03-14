@@ -109,3 +109,17 @@ class TerrainType(Enum):
     FLAT = "flat"
     HILLY = "hilly"
     MOUNTAINOUS = "mountainous"
+
+
+class Climate(Enum):
+    TEMPERATE = "temperate"
+    SUB_ARCTIC = "sub-arctic"
+    SUB_TROPICAL = "sub-tropical"
+    TOYLAND = "toyland"
+
+
+class Size(Enum):
+    SMALL = "small"
+    NORMAL = "normal"
+    LARGE = "large"
+    HUGE = "huge"
