@@ -5,6 +5,10 @@ from PIL import Image
 from ..exceptions import ValidationException
 from ...helpers.enums import PackageType
 
+# Limit the size of heightmaps, as otherwise it could allocate a lot of
+# memory for clients loading the map.
+Image.MAX_IMAGE_PIXELS = 16384 * 16384
+
 
 def rgb_to_gray(color):
     return ((color[0] * 19595) + (color[1] * 38470) + (color[2] * 7471)) // 65536
@@ -47,13 +51,10 @@ class Heightmap:
 
         try:
             im = Image.open(fp)
+        except Image.DecompressionBombError:
+            raise ValidationException("Image is too large.")
         except Exception:
             raise ValidationException("File is not a valid image.")
-
-        # Limit the size of heightmaps, as otherwise it could allocate a lot of
-        # memory for clients loading the map.
-        if im.width * im.height > 16384 * 16384:
-            raise ValidationException("Image is too large.")
 
         self.size = im.size
 
