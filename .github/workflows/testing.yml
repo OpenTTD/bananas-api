@@ -36,7 +36,7 @@ jobs:
 
     - name: Install tusd
       run: |
-        wget -q https://github.com/tus/tusd/releases/download/v1.1.0/tusd_linux_amd64.tar.gz
+        wget -q https://github.com/tus/tusd/releases/download/v1.11.0/tusd_linux_amd64.tar.gz
         mkdir -p tusd
         tar xf tusd_linux_amd64.tar.gz -C tusd
         sudo mv tusd/tusd_linux_amd64/tusd /usr/bin/tusd
