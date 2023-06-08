@@ -9,67 +9,12 @@ on:
     - main
 
 jobs:
-  codeql:
-    name: Security and Quality
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: python -m pip install -r requirements.txt
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: python
-        queries: security-and-quality
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-
-  docker:
-    name: Docker build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Build
-      run: docker build .
-
-  flake8:
-    name: Flake8
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Flake8 bananas_api
-      uses: TrueBrain/actions-flake8@v2
-      with:
-        path: bananas_api
-    - name: Flake8 regression_runner
-      uses: TrueBrain/actions-flake8@v2
-      with:
-        path: regression_runner
-
-  black:
-    name: Black
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
-    - name: Set up packages
-      run: |
-        python -m pip install --upgrade pip
-        pip install black
-    - name: Black
-      run: |
-        black -l 120 --check bananas_api regression_runner
+  testing:
+    name: Testing
+    uses: OpenTTD/actions/.github/workflows/rw-entry-testing-docker-py.yml@v4
+    with:
+      python-path: bananas_api
+      python-version: 3.8
 
   regression:
     name: Regression
@@ -77,15 +22,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
       with:
         python-version: 3.8
+
     - name: Set up packages
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r regression_runner/requirements.txt
+
     - name: Install tusd
       run: |
         wget -q https://github.com/tus/tusd/releases/download/v1.1.0/tusd_linux_amd64.tar.gz
@@ -93,23 +41,7 @@ jobs:
         tar xf tusd_linux_amd64.tar.gz -C tusd
         sudo mv tusd/tusd_linux_amd64/tusd /usr/bin/tusd
         rm -rf tusd_linux_amd64.tar.gz tusd
+
     - name: Regression
       run: |
         make regression
-
-  check_annotations:
-    name: Check Annotations
-    needs:
-    - docker
-    - flake8
-    - black
-    - regression
-    # not codeql, as that reports its own status
-
-    if: always() && github.event_name == 'pull_request'
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Check annotations
-      uses: OpenTTD/actions/annotation-check@v3
