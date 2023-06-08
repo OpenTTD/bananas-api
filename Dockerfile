@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p ~/.ssh \
     && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
-RUN wget -q https://github.com/tus/tusd/releases/download/v1.1.0/tusd_linux_amd64.tar.gz \
+RUN wget -q https://github.com/tus/tusd/releases/download/v1.11.0/tusd_linux_amd64.tar.gz \
     && mkdir -p /tusd \
     && tar xf tusd_linux_amd64.tar.gz -C /tusd \
     && mv /tusd/tusd_linux_amd64/tusd /usr/bin/tusd \
