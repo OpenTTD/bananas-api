@@ -2,6 +2,7 @@ aiohttp
 aioauth_client
 boto3
 click
+github3.py
 gitpython
 marshmallow
 marshmallow-enum
