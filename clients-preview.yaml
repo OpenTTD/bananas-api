@@ -2,4 +2,4 @@ clients:
 - id: ape
   redirect-uri: "http://localhost:3977/"
 - id: webclient
-  redirect-uri: "https://bananas.staging.openttd.org/"
+  redirect-uri: "https://bananas-preview.openttd.org/"
