@@ -89,6 +89,10 @@ async def check_expire():
             user.check_expire()
 
 
+def start_check_expire(loop):
+    loop.create_task(check_expire())
+
+
 def get_session_expire():
     return SESSION_EXPIRE
 
@@ -136,7 +140,3 @@ def click_user_session(user, user_session_expire, user_login_expire, user_sessio
 
     for user_class in user:
         _methods[user_class.method] = user_class
-
-    # Start the expire check via an async task
-    loop = asyncio.get_event_loop()
-    loop.create_task(check_expire())
