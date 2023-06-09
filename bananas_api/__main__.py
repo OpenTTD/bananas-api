@@ -15,6 +15,7 @@ from .helpers.content_save import click_content_save
 from .helpers.user_session import (
     click_user_session,
     register_webroutes,
+    start_check_expire,
 )
 from .new_upload.session import click_cleanup_graceperiod
 from .new_upload.session_publish import click_storage
@@ -115,8 +116,10 @@ def main(bind, web_port, tusd_port, behind_proxy):
     # Always make sure "fallback" comes last. It has a catch-all rule.
     webapp.add_routes(fallback.routes)
 
+    loop = asyncio.new_event_loop()
+    start_check_expire(loop)
+
     # Start tusd as part of the application
-    loop = asyncio.get_event_loop()
     for host in bind:
         if ":" in host:
             host = f"[{host}]"
