@@ -32,12 +32,24 @@ from .web_routes.user import click_client_file
 
 log = logging.getLogger(__name__)
 
+# The name of the header to use for remote IP addresses.
+REMOTE_IP_HEADER = None
+
 
 class ErrorOnlyAccessLogger(AccessLogger):
     def log(self, request, response, time):
         # Only log if the status was not successful
         if not (200 <= response.status < 400):
+            if REMOTE_IP_HEADER and REMOTE_IP_HEADER in request.headers:
+                request = request.clone(remote=request.headers[REMOTE_IP_HEADER])
             super().log(request, response, time)
+
+
+@web.middleware
+async def remote_ip_header_middleware(request, handler):
+    if REMOTE_IP_HEADER in request.headers:
+        request = request.clone(remote=request.headers[REMOTE_IP_HEADER])
+    return await handler(request)
 
 
 def set_death_signal():
@@ -83,6 +95,10 @@ async def _run_tusd(host, tusd_port, web_port, base_path, behind_proxy=False):
 @click.option("--web-port", help="Port of the web server.", default=80, show_default=True, metavar="PORT")
 @click.option("--tusd-port", help="Port of the tus server.", default=1080, show_default=True, metavar="PORT")
 @click.option(
+    "--remote-ip-header",
+    help="Header which contains the remote IP address. Make sure you trust this header!",
+)
+@click.option(
     "--behind-proxy", help="Respect X-Forwarded-* and similar headers which may be set by proxies.", is_flag=True
 )
 @common.click_reload_secret
@@ -92,7 +108,7 @@ async def _run_tusd(host, tusd_port, web_port, base_path, behind_proxy=False):
 @click_client_file
 @click_user_session
 @click_user_github
-def main(bind, web_port, tusd_port, behind_proxy):
+def main(bind, web_port, tusd_port, remote_ip_header, behind_proxy):
     """
     Start the BaNaNaS API.
 
@@ -103,6 +119,11 @@ def main(bind, web_port, tusd_port, behind_proxy):
     """
 
     webapp = web.Application()
+    if remote_ip_header:
+        global REMOTE_IP_HEADER
+        REMOTE_IP_HEADER = remote_ip_header.upper()
+        webapp.middlewares.insert(0, remote_ip_header_middleware)
+
     webapp.add_routes(common.routes)
     webapp.add_routes(config.routes)
     webapp.add_routes(discover.routes)
