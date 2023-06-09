@@ -41,8 +41,8 @@ COPY requirements.txt \
         LICENSE \
         README.md \
         clients-development.yaml \
+        clients-preview.yaml \
         clients-production.yaml \
-        clients-staging.yaml \
         region-un-m49.csv \
         region-iso-3166-1.json \
         region-iso-3166-2.json \
