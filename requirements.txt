@@ -24,7 +24,7 @@ jmespath==1.0.1
 marshmallow==3.19.0
 marshmallow-enum==1.5.1
 multidict==6.0.4
-openttd-helpers==1.2.0
+openttd-helpers==1.4.0
 packaging==23.1
 Pillow==9.5.0
 pycparser==2.21
