@@ -1,3 +1,16 @@
+FROM python:3.8-slim as builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpng-dev \
+        libpython3-dev
+
+COPY setup.py /code/
+COPY src /code/src
+
+RUN cd /code && python setup.py install && mkdir /result
+RUN mv /code/build/*/*.so /result/
+
 FROM python:3.8-slim
 
 ARG BUILD_DATE=""
@@ -20,6 +33,7 @@ LABEL org.opencontainers.image.description="This is the HTTP API for OpenTTD's c
 # wget is temporary needed to download tusd.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
+        libpng16-16 \
         openssh-client \
         wget \
     && rm -rf /var/lib/apt/lists/*
@@ -60,6 +74,7 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
+COPY --from=builder /result/*.so /usr/local/lib/python3.8/site-packages/
 COPY bananas_api /code/bananas_api
 
 ENTRYPOINT ["python", "-m", "bananas_api"]

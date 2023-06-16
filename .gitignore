@@ -3,6 +3,7 @@ __pycache__/
 .coverage
 /.env
 /BaNaNaS
+/build
 /data
 /htmlcov
 /local_storage
