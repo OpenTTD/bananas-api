@@ -7,7 +7,6 @@ gitpython
 marshmallow
 marshmallow-enum
 openttd-helpers
-Pillow
 python-dateutil
 PyYAML
 sentry_sdk
