@@ -25,6 +25,10 @@ def _find_root_folder(info_list, get_name=None, is_file=None):
         if not is_file(info):
             continue
 
+        # Help out MacOS users, and completely ignore this metadata folder it tends to create.
+        if get_name(info).startswith("__MACOSX/"):
+            continue
+
         if root_folder is None:
             root_folder = get_name(info).split("/")[0]
 
@@ -56,6 +60,10 @@ def _extract_files(info_list, root_folder, extractor, extractor_kwargs, get_name
             "internal_filename": internal_filename,
             "errors": [],
         }
+
+        # Help out MacOS users, and completely ignore this metadata folder it tends to create.
+        if new_file["filename"].startswith("__MACOSX/"):
+            continue
 
         # Remove the root-folder from the filename if needed.
         if root_folder:
