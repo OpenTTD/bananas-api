@@ -79,7 +79,7 @@ class Index:
 
     def read_content_version(self, path, version, load_as_object=False):
         with open(f"{self.folder}/{path}/versions/{version}.yaml") as f:
-            version_data = yaml.safe_load(f.read())
+            version_data = yaml.load(f.read(), Loader=yaml.CSafeLoader)
 
             # YAML converts this in a datetime() for us, and marshmallow
             # expects a string. So output it as an ISO-8601 again.
@@ -99,14 +99,14 @@ class Index:
         path = f"{category}/{unique_id}"
 
         with open(f"{self.folder}/{path}/global.yaml") as f:
-            package_data = yaml.safe_load(f.read())
+            package_data = yaml.load(f.read(), Loader=yaml.CSafeLoader)
 
         if package_data.get("blacklisted"):
             return None
 
         package_data["authors"] = []
         with open(f"{self.folder}/{path}/authors.yaml") as f:
-            authors_data = yaml.safe_load(f.read())
+            authors_data = yaml.load(f.read(), Loader=yaml.CSafeLoader)
 
             for author_data in authors_data.get("authors", []):
                 package_data["authors"].append(author_data)

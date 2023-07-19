@@ -39,7 +39,7 @@ def click_client_file(client_file):
         return
 
     with open(client_file, "r") as fp:
-        data = yaml.safe_load(fp.read())
+        data = yaml.load(fp.read(), Loader=yaml.CSafeLoader)
 
         for client in data["clients"]:
             _clients[client["id"]] = client["redirect-uri"]

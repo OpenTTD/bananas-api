@@ -504,7 +504,7 @@ async def _handle_files(filenames):
 
         try:
             with open(filename, "r") as f:
-                data = yaml.safe_load(f)
+                data = yaml.load(f, Loader=yaml.CSafeLoader)
 
             await _handle_file(data)
             log.success("Regression test passed")

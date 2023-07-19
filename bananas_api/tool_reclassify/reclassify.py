@@ -25,7 +25,7 @@ def reclassify_and_update_metadata(index_folder, storage_folder, category, uniqu
 
     # Load the global data to find things like the name.
     with open(f"{index_folder}/{category}/{unique_id}/global.yaml") as f:
-        global_data = yaml.safe_load(f.read())
+        global_data = yaml.load(f.read(), Loader=yaml.CSafeLoader)
 
     name = data.get("name", global_data.get("name", "Unknown"))
 
