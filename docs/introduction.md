@@ -34,7 +34,7 @@ BaNaNaS is composed of several components:
 
 - [BaNaNaS](https://github.com/OpenTTD/BaNaNaS) - Database of all the content available
 - [bananas-server](https://github.com/OpenTTD/bananas-server) - Server with which the OpenTTD client communicates (custom TCP protocol)
-- [bananas-api](https://github.com/OpenTTD/bananas-api) - The web-based API for various of frontends (published at [api.bananas.openttd.org](https://api.bananas.openttd.org))
+- [bananas-api](https://github.com/OpenTTD/bananas-api) - The web-based API for various of frontends (published at [bananas-api.openttd.org](https://bananas-api.openttd.org))
 - [bananas-frontend-cli](https://github.com/OpenTTD/bananas-frontend-cli) - The CLI frontend for the API
 - [bananas-frontend-web](https://github.com/OpenTTD/bananas-frontend-web) - The web frontend for the API (published at [bananas.openttd.org](https://bananas.openttd.org))
 
