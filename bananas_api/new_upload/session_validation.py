@@ -111,9 +111,9 @@ def validate_packet_size(session, package):
     size += 1
     for key, value in Classification().dump(session.get("classification")).items():
         size += len(key) + 2
-        if isinstance(value, str):
+        if type(value) is str:
             size += len(value) + 2
-        elif isinstance(value, bool):
+        elif type(value) is bool:
             size += len("yes") + 2
         else:
             raise ValueError("Unknown type for classification value")
