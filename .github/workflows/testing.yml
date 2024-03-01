@@ -11,7 +11,7 @@ on:
 jobs:
   testing:
     name: Testing
-    uses: OpenTTD/actions/.github/workflows/rw-entry-testing-docker-py.yml@v4
+    uses: OpenTTD/actions/.github/workflows/rw-entry-testing-docker-py.yml@v5
     with:
       python-path: bananas_api
       python-version: 3.8
@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
 
