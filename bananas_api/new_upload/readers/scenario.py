@@ -82,12 +82,6 @@ class Scenario:
     @ivar newgrf: List of NewGRF as (grf-id, md5sum, version, filename)
     @type newgrf: C{list} of (C{int}, C{str}, C{int}, C{str})
 
-    @ivar ai: List of non-random AIs as (short-id, md5sum, version, name)
-    @type ai: C{list} of (C{None}, C{None}, C{int}, C{str})
-
-    @ivar gs: List of game scripts as (short-id, md5sum, version, name)
-    @type gs: C{list} of (C{None}, C{None}, C{int}, C{str})
-
     @ivar landscape: Landscape type
     @type landscape: C{int}
     """
@@ -101,8 +95,6 @@ class Scenario:
         self.map_size = (None, None)
         self.histogram = None
         self.newgrf = []
-        self.ai = []
-        self.gs = []
         self.landscape = None
 
         # In old savegames, heightmap was in MAPT. In newer in MAPH.
@@ -363,7 +355,7 @@ class Scenario:
         reader = binreader.BinaryReader(io.BytesIO(data))
 
         # Only look at those chunks that have data we are interested in.
-        if tag not in (b"MAPS", b"NGRF", b"AIPL", b"GSDT", b"PATS"):
+        if tag not in (b"MAPS", b"NGRF", b"PATS"):
             return
 
         table = self.read_table(fields, reader)
@@ -374,12 +366,6 @@ class Scenario:
             self.newgrf.append(
                 (table["ident.grfid"], bytes(table["ident.md5sum"]).hex(), table["version"], table["filename"])
             )
-        elif tag == b"AIPL":
-            if table["is_random"] == 0 and table["name"]:
-                self.ai.append((None, None, table["version"], table["name"]))
-        elif tag == b"GSDT":
-            if table["is_random"] == 0 and table["name"]:
-                self.gs.append((None, None, table["version"], table["name"]))
         elif tag == b"PATS":
             self.landscape = table["game_creation.landscape"]
 
@@ -403,23 +389,6 @@ class Scenario:
             else:
                 version = reader.uint32(be=True)
             self.newgrf.append((grfid, md5sum, version, filename))
-        elif tag == b"AIPL":
-            name = reader.gamma_str().decode()
-            reader.gamma_str()
-            if self.savegame_version < 108:
-                version = None
-            else:
-                version = reader.uint32(be=True)
-            is_random = self.savegame_version >= 136 and reader.uint8() != 0
-            if not is_random and len(name) > 0:
-                self.ai.append((None, None, version, name))
-        elif tag == b"GSDT":
-            name = reader.gamma_str().decode()
-            reader.gamma_str()
-            version = reader.uint32(be=True)
-            is_random = reader.uint8() != 0
-            if not is_random and len(name) > 0:
-                self.gs.append((None, None, version, name))
         elif tag == b"PATS":
             # Before version 97, landscape was part not part of OPTS.
             if self.savegame_version < 97:
