@@ -103,6 +103,10 @@ class Scenario:
         # aren't influencing the histogram.
         self._histogram_old = None
 
+        # To read JGRPP savegames in the best way, we need to know
+        # what features are enabled.
+        self._jgrpp_features = {}
+
     def read(self, fp):
         """
         Read savegame meta data.
@@ -150,8 +154,32 @@ class Scenario:
                 if ext_flags & 0x01:
                     size += reader.uint32(be=True) << 28
 
+                # JGRPP's feature-flags chunk
+                if tag == b"SLXI":
+                    version = reader.uint32(be=True)
+                    flags = reader.uint32(be=True)
+                    features = reader.uint32(be=True)
+
+                    if version != 0 or flags != 0:
+                        raise ValidationException("Invalid savegame.")
+
+                    for i in range(features):
+                        feature_flags = reader.uint32(be=True)
+                        feature_version = reader.uint16(be=True)
+                        feature_name = reader.gamma_str().decode()
+
+                        if feature_flags & 0x4:  # XSCF_EXTRA_DATA_PRESENT
+                            extra_data_length = reader.uint32(be=True)
+                            reader.skip(extra_data_length)
+
+                        if feature_flags & 0x8:  # XSCF_CHUNK_ID_LIST_PRESENT
+                            chunk_id_list_count = reader.uint32(be=True)
+                            reader.skip(chunk_id_list_count * 4)
+
+                        self._jgrpp_features[feature_name] = feature_version
+
                 # New savegame format, with the height of the tile in MAPH.
-                if tag == b"MAPH":
+                elif tag == b"MAPH":
                     self.histogram = [0] * 256
                     while size > 0:
                         data = reader.read(min(size, 8192))
@@ -160,7 +188,7 @@ class Scenario:
                         size -= min(size, 8192)
 
                 # Old savegame format, with the height of the tile in MAPT.
-                if tag == b"MAPT":
+                elif tag == b"MAPT":
                     self._histogram_old = [0] * 256
                     while size > 0:
                         data = reader.read(min(size, 8192))
@@ -169,7 +197,7 @@ class Scenario:
                         size -= min(size, 8192)
 
                 # JGRPP-based map chunk containing the height of the tile.
-                if tag == b"WMAP":
+                elif tag == b"WMAP":
                     self.histogram = [0] * 256
 
                     # First chunk is 8 bytes per tile for the whole map.
@@ -194,7 +222,7 @@ class Scenario:
                         reader.skip(min(size, 8192))
                         size -= min(size, 8192)
 
-                if tag in (
+                elif tag in (
                     b"MAPO",
                     b"MAP2",
                     b"M3LO",
@@ -339,7 +367,16 @@ class Scenario:
                 size, _ = reader.gamma()
                 value = reader.read(size)
             elif is_list:
-                count, _ = reader.gamma()
+                # Older versions of JGRPP didn't store the length for fixed-length arrays.
+                # As such, we inject the right sizes here. Later versions of JGRPP address
+                # that issue, in which case the table_newgrf_sl is no longer 1.
+                if self._jgrpp_features.get("table_newgrf_sl") == 1 and field_key == "ident.md5sum":
+                    count = 16
+                elif self._jgrpp_features.get("table_newgrf_sl") == 1 and field_key == "param":
+                    count = 0x80
+                else:
+                    count, _ = reader.gamma()
+
                 value = [self.read_field(field_type, reader) for _ in range(count)]
             else:
                 value = self.read_field(field_type, reader)
