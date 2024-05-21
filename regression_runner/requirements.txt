@@ -12,7 +12,7 @@ humanfriendly==10.0
 idna==3.6
 multidict==6.0.5
 PyYAML==6.0.1
-requests==2.31.0
+requests==2.32.0
 six==1.16.0
 tinydb==4.8.0
 tuspy==1.0.3
