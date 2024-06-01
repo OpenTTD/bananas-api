@@ -11,6 +11,7 @@ class BaseSounds(BaseSet):
             "shortname": str,
             "version": str,
             "description": str,
+            "url": str,
         },
         "files": {
             "samples": str,

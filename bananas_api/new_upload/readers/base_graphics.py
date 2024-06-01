@@ -11,6 +11,7 @@ class BaseGraphics(BaseSet):
             "shortname": str,
             "version": str,
             "description": str,
+            "url": str,
             "palette": str,
             "blitter": str,
         },

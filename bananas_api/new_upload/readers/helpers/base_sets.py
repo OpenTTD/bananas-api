@@ -19,6 +19,9 @@ class BaseSet:
     @ivar description: Description of Base Set
     @type description: C{str}
 
+    @ivar url: URL of Base Set
+    @type url: C{str}
+
     @ivar files: Files included in Base Set, with their md5sum
     @type files: C{dict}
     """
@@ -30,6 +33,7 @@ class BaseSet:
         self.unique_id = None
         self.version = None
         self.description = None
+        self.url = None
         self.files = None
 
     def read(self, fp):
@@ -95,5 +99,6 @@ class BaseSet:
         self.unique_id = ini_parser.get("metadata", "shortname").encode()
         self.version = ini_parser.get("metadata", "version")
         self.description = ini_parser.get("metadata", "description")
+        self.url = ini_parser.get("metadata", "url")
         self.files = files
         self.md5sum = md5sum
