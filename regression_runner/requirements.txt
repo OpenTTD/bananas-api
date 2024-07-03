@@ -16,6 +16,6 @@ requests==2.32.3
 six==1.16.0
 tinydb==4.8.0
 tuspy==1.0.3
-urllib3==2.2.2
+urllib3==1.26.19
 verboselogs==1.7
 yarl==1.9.4
