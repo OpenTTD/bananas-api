@@ -11,13 +11,13 @@ The API is documented on [SwaggerHub](https://app.swaggerhub.com/apis-docs/OpenT
 
 ## Development
 
-This API is written in Python 3.8 with aiohttp, and makes strong use of asyncio.
+This API is written in Python 3.11 with aiohttp, and makes strong use of asyncio.
 
 ### Running a local server
 
 #### Dependencies
 
-- Python3.8 or higher.
+- Python3.11 or higher.
 - [tusd](https://github.com/tus/tusd). For example, copy the `tusd` binary in your `~/.local/bin`.
 
 #### Preparing your venv
