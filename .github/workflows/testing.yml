@@ -30,6 +30,12 @@ jobs:
 
     - name: Set up packages
       run: |
+        sudo apt install -y --no-install-recommends \
+          build-essential \
+          libpng-dev \
+          libpython3-dev \
+          # EOF
+
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r regression_runner/requirements.txt
