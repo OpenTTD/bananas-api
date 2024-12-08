@@ -1,4 +1,4 @@
-FROM python:3.8-slim AS builder
+FROM python:3.11-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -11,7 +11,7 @@ COPY src /code/src
 RUN cd /code && python setup.py install && mkdir /result
 RUN mv /code/build/*/*.so /result/
 
-FROM python:3.8-slim
+FROM python:3.11-slim
 
 ARG BUILD_DATE=""
 ARG BUILD_VERSION="dev"
@@ -74,7 +74,7 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
-COPY --from=builder /result/*.so /usr/local/lib/python3.8/site-packages/
+COPY --from=builder /result/*.so /usr/local/lib/python3.11/site-packages/
 COPY bananas_api /code/bananas_api
 
 ENTRYPOINT ["python", "-m", "bananas_api"]
