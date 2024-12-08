@@ -27,6 +27,7 @@ To start it, you are advised to first create a virtualenv:
 ```bash
 python3 -m venv .env
 .env/bin/pip install -r requirements.txt
+python setup.py install
 ```
 
 #### Starting a local server
