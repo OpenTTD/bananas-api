@@ -45,19 +45,19 @@ CTRL_CODES = {
     0x97: (0, ""),  # DKBLUE
     0x98: (0, ""),  # BLACK
     0x99: (0, ""),  # BLUE
-    0x9E: (0, "\u20AC"),  # Euro sign
+    0x9E: (0, "\u20ac"),  # Euro sign
     0x9F: (0, "\u0178"),  # Y with diaeresis
-    0xA0: (0, "\u25B2"),  # Arrow up
-    0xAA: (0, "\u25BC"),  # Arrow down
+    0xA0: (0, "\u25b2"),  # Arrow up
+    0xAA: (0, "\u25bc"),  # Arrow down
     0xAC: (0, "\u2713"),  # Checkmark
-    0xAD: (0, "\u274C"),  # Cross
-    0xAF: (0, "\u25B6"),  # Arrow right
+    0xAD: (0, "\u274c"),  # Cross
+    0xAF: (0, "\u25b6"),  # Arrow right
     0xB4: (0, ""),  # Train
     0xB5: (0, ""),  # Lorry
     0xB6: (0, ""),  # Bus
     0xB7: (0, ""),  # Plane
     0xB8: (0, ""),  # Ship
-    0xB9: (0, "\u208B\u2081"),  # Superscript m1
+    0xB9: (0, "\u208b\u2081"),  # Superscript m1
     0xBC: (0, "\u2191"),  # Small arrow up
     0xBD: (0, "\u2193"),  # Small arrow down
 }
@@ -266,7 +266,7 @@ class NewGRF:
 
         size = reader.uint16()
         if size == 0:
-            if reader.read(8) == b"GRF\x82\r\n\x1A\n":
+            if reader.read(8) == b"GRF\x82\r\n\x1a\n":
                 self.container_version = 2
                 reader.uint32()
                 if reader.uint8() != 0:
