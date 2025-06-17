@@ -12,7 +12,7 @@ TOTAL_FINISHED = 0
 
 
 def update_progress(unique_id, version, md5sum_partial, name, error, message, classification, is_available):
-    global TOTAL_ENTRIES, TOTAL_FINISHED
+    global TOTAL_FINISHED
     TOTAL_FINISHED += 1
 
     if error:
