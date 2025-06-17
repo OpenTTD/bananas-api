@@ -5,7 +5,6 @@ click
 github3.py
 gitpython
 marshmallow
-marshmallow-enum
 openttd-helpers
 python-dateutil
 PyYAML

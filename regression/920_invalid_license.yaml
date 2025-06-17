@@ -6,4 +6,4 @@ steps:
   version: "test"
   license: "My License"
   error:
-    license: "Invalid enum value My License"
+    license: "Must be one of: GPL v2, GPL v3, LGPL v2.1, CC-0 v1.0, CC-BY v3.0, CC-BY-SA v3.0, CC-BY-NC-SA v3.0, CC-BY-NC-ND v3.0, Custom."
