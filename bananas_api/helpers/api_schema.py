@@ -7,7 +7,6 @@ from marshmallow import (
     validates_schema,
 )
 from marshmallow.exceptions import ValidationError
-from marshmallow_enum import EnumField
 
 from .content_storage import get_indexed_package
 from .enums import (
@@ -122,7 +121,7 @@ class Authors(OrderedSchema):
 
 
 class Dependency(OrderedSchema):
-    content_type = EnumField(ContentType, data_key="content-type", by_value=True)
+    content_type = fields.Enum(ContentType, data_key="content-type", by_value=True)
     unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
     md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(equal=8))
 
@@ -150,7 +149,7 @@ class Dependency(OrderedSchema):
 
 
 class Compatability(OrderedSchema):
-    name = EnumField(Branch, by_value=True)
+    name = fields.Enum(Branch, by_value=True)
     conditions = fields.List(fields.String(), validate=validate.Length(min=1, max=2))
 
     @validates("conditions")
@@ -207,15 +206,15 @@ class Compatability(OrderedSchema):
 
 
 class Classification(OrderedSchema):
-    set = EnumField(NewGRFSet, by_value=True)
-    palette = EnumField(Palette, by_value=True)
+    set = fields.Enum(NewGRFSet, by_value=True)
+    palette = fields.Enum(Palette, by_value=True)
     has_high_res = fields.Boolean(data_key="has-high-res")
     has_sound_effects = fields.Boolean(data_key="has-sound-effects")
-    shape = EnumField(Shape, by_value=True)
-    resolution = EnumField(Resolution, by_value=True)
-    terrain_type = EnumField(TerrainType, by_value=True, data_key="terrain-type")
-    size = EnumField(Size, by_value=True)
-    climate = EnumField(Climate, by_value=True)
+    shape = fields.Enum(Shape, by_value=True)
+    resolution = fields.Enum(Resolution, by_value=True)
+    terrain_type = fields.Enum(TerrainType, by_value=True, data_key="terrain-type")
+    size = fields.Enum(Size, by_value=True)
+    climate = fields.Enum(Climate, by_value=True)
 
 
 class VersionMinimized(Global):
@@ -223,12 +222,12 @@ class VersionMinimized(Global):
     read_only_for_new = ["upload_date", "md5sum_partial", "classification", "filesize", "availability"]
 
     version = fields.String(validate=ValidateBytesLength(max=15))
-    license = EnumField(License, by_value=True)
+    license = fields.Enum(License, by_value=True)
     upload_date = fields.DateTime(data_key="upload-date", format="iso")
     md5sum_partial = fields.String(data_key="md5sum-partial", validate=validate.Length(equal=8))
     classification = fields.Nested(Classification())
     filesize = fields.Integer()
-    availability = EnumField(Availability, by_value=True)
+    availability = fields.Enum(Availability, by_value=True)
     dependencies = fields.List(fields.Nested(Dependency()))
     compatibility = fields.List(fields.Nested(Compatability()))
 
@@ -236,7 +235,7 @@ class VersionMinimized(Global):
 class Package(Global):
     read_only = ["content_type", "unique_id", "archived", "replaced_by"]
 
-    content_type = EnumField(ContentType, data_key="content-type", by_value=True)
+    content_type = fields.Enum(ContentType, data_key="content-type", by_value=True)
     unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
     authors = fields.List(fields.Nested(Author))
     versions = fields.List(fields.Nested(VersionMinimized))
@@ -245,7 +244,7 @@ class Package(Global):
 class Version(VersionMinimized):
     read_only = ["content_type", "unique_id"]
 
-    content_type = EnumField(ContentType, data_key="content-type", by_value=True)
+    content_type = fields.Enum(ContentType, data_key="content-type", by_value=True)
     unique_id = fields.String(data_key="unique-id", validate=validate.Length(equal=8))
 
 
@@ -260,7 +259,7 @@ class UploadStatus(Version):
     files = fields.List(fields.Nested(UploadStatusFiles))
     warnings = fields.List(fields.String)
     errors = fields.List(fields.String)
-    status = EnumField(Status, by_value=True)
+    status = fields.Enum(Status, by_value=True)
 
 
 class UploadNew(OrderedSchema):
