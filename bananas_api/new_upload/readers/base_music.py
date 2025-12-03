@@ -11,6 +11,7 @@ class BaseMusic(BaseSet):
             "shortname": str,
             "version": str,
             "description": str,
+            "url": str | None,
         },
         "files": {
             "theme": str,

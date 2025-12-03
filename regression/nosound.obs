@@ -3,6 +3,7 @@ name         = NoSound
 shortname    = NULL
 version      = 0
 description  = A sound pack without any sounds
+url          = http://localhost
 
 [files]
 samples      = nosound.cat
