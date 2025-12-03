@@ -6,4 +6,4 @@ steps:
   version: "test"
   license: "Custom"
 - api: new-package/publish
-  error: "License is set to custom, but no license.txt is uploaded."
+  error: "License is set to custom, but no 'license.txt' or 'license.md' is uploaded."

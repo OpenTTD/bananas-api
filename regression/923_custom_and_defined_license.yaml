@@ -7,4 +7,4 @@ steps:
   version: "test"
   license: "GPL v2"
 - api: new-package/publish
-  error: "License is set to GPL v2; this does not require uploading 'license.txt'."
+  error: "License is set to GPL v2; this does not require uploading 'license.txt' or 'license.md'."
