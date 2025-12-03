@@ -13,6 +13,7 @@ class BaseGraphics(BaseSet):
             "description": str,
             "palette": str,
             "blitter": str,
+            "url": str | None,
         },
         "files": {
             "base": str,
