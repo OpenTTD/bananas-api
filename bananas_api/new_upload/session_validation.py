@@ -31,15 +31,16 @@ def validate_license(session):
         session["errors"].append("License is not yet set for this package.")
     elif session["license"] == License.CUSTOM:
         for file_info in session["files"]:
-            if file_info["filename"] == "license.txt":
+            if file_info["filename"] in ("license.txt", "license.md"):
                 break
         else:
-            session["errors"].append("License is set to custom, but no license.txt is uploaded.")
+            session["errors"].append("License is set to custom, but no 'license.txt' or 'license.md' is uploaded.")
     else:
         for file_info in session["files"]:
-            if file_info["filename"] == "license.txt":
+            if file_info["filename"] in ("license.txt", "license.md"):
                 session["errors"].append(
-                    f"License is set to {session['license'].value}; this does not require uploading 'license.txt'."
+                    f"License is set to {session['license'].value}; "
+                    "this does not require uploading 'license.txt' or 'license.md'."
                 )
 
 
