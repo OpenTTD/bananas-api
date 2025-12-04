@@ -4,10 +4,11 @@ steps:
 - file-upload: nosound.obs
 - file-upload: nosound.cat
 - file-upload: license.txt
+  name: license.md
 - file-upload: readme.txt
-  name: readme_nl.txt
+  name: readme_nl.md
 - file-upload: changelog.txt
-  name: changelog_nl.txt
+  name: changelog_nl.md
 - api: new-package/update
   name: "test"
   version: "v1"

@@ -97,9 +97,9 @@ PACKAGE_TYPE_PAIRS = {
 
 # readme.txt and changelog.txt can have translations. This can be with the
 # first part of the ISO code, or with the full. For example:
-# readme.txt, readme_nl.txt, readme_nl_NL.txt
+# readme.txt, readme_nl.txt, readme_nl_NL.txt, readme.md
 # All other variantions are not valid.
-txt_regexp = re.compile(r"(readme|changelog)(_[a-z]{2}(_[A-Z]{2})?)?\.txt$")
+txt_regexp = re.compile(r"(readme|changelog)(_[a-z]{2}(_[A-Z]{2})?)?\.(txt|md)$")
 
 
 def _validate_textfile_encoding(fp):
@@ -111,14 +111,14 @@ def _validate_textfile_encoding(fp):
 
 def _read_object(filename, fp):
     lfilename = filename.lower()
-    if lfilename.endswith(".txt"):
-        if filename == "license.txt":
-            _validate_textfile_encoding(fp)
-            return None
-        elif txt_regexp.match(filename):
-            _validate_textfile_encoding(fp)
-            return None
-        elif filename.startswith("lang/"):
+    if filename in ("license.txt", "license.md"):
+        _validate_textfile_encoding(fp)
+        return None
+    elif txt_regexp.match(filename):
+        _validate_textfile_encoding(fp)
+        return None
+    elif lfilename.endswith(".txt"):
+        if filename.startswith("lang/"):
             _validate_textfile_encoding(fp)
             return None
         else:
