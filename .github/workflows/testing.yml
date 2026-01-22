@@ -30,7 +30,8 @@ jobs:
 
     - name: Set up packages
       run: |
-        sudo apt install -y --no-install-recommends \
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
           build-essential \
           libpng-dev \
           libpython3-dev \
