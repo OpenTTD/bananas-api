@@ -20,7 +20,7 @@ httpcore==1.0.9
 httpx==0.28.1
 idna==3.10
 jmespath==1.0.1
-marshmallow==4.0.0
+marshmallow==4.1.2
 multidict==6.5.0
 openttd-helpers==1.4.0
 packaging==25.0
