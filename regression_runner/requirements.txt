@@ -12,7 +12,7 @@ idna==3.10
 multidict==6.5.0
 propcache==0.3.2
 PyYAML==6.0.2
-requests==2.32.4
+requests==2.33.0
 tinydb==4.8.2
 tuspy==1.1.0
 urllib3==2.3.0
