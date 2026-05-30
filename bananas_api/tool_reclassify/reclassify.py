@@ -12,7 +12,6 @@ from ..new_upload.classifiers.newgrf import classify_newgrf
 from ..new_upload.classifiers.scenario import classify_scenario
 from ..new_upload.session_validation import validate_packet_size
 
-
 CLASSIFICATION_TO_FUNCTION = {
     "heightmap": (load_heightmap, classify_heightmap),
     "newgrf": (load_newgrf, classify_newgrf),
