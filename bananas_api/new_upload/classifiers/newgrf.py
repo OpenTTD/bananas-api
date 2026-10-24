@@ -8,7 +8,6 @@ from ..readers.newgrf import (
     NewGRF,
 )
 
-
 FEATURE_TO_CLASSIFICATION = {
     Feature.AIRCRAFT: NewGRFSet.AIRCRAFT,
     Feature.AIRPORT_TILES: NewGRFSet.AIRPORT,
